@@ -1,0 +1,10 @@
+Fitur website 
+1. User
+- Pengunjung dapat mengakses web sebagai tamu untuk melihat berbagai tawaran dalam gym tersebut
+- Pelanggan dapat membuat/registrasi akun untuk mengakses fitur dalam web
+- Pelanggan yang telah registrasi akun mendapatkan pilihan untuk menjadi non member atau membership
+  - Non member dapat langsung mengakses fasilitas gym dengan melakukan transaksi dimuka untuk mendapatkan akses dalam sehari dan mendapatkan seorang personal trainer.
+  - Member akan mendapatkan fasilitas akses dalam sebulan, diskon dalam membeli produk suplemen, dan mendapatkan seorang personal trainer. 
+    Dengan melakukan pembayaran dalam jangka waktu sebulan dengan harga yang relatif lebih murah dibanding non member. 
+2. Admin
+- 
