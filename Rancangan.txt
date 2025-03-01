@@ -8,3 +8,14 @@ Fitur website
     Dengan melakukan pembayaran dalam jangka waktu sebulan dengan harga yang relatif lebih murah dibanding non member. 
 2. Admin
 - 
+
+
+scratch use case diagram 
+- Subsistem Kelola transaksi gym
+  + Transaksi harian (Admin/User)
+  + Transaksi membership (Admin/User)
+  + Transaksi suplement (User,Admin,Personal Traineer)
+  + Transaksi kontrak (Admin,Personal Traineer)
+  + Histori keuangan (Admin)
+- Subsistem Kelola Jadwal
+  + 
