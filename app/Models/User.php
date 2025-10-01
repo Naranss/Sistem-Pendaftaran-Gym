@@ -18,15 +18,9 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        "idUser",
-        "nama",
-        "password",
-        "email",
-        "noTelp",
-        "gender",
-        "role",
-        "membershipStrat",
-        "membershipEnd"
+        'name',
+        'email',
+        'password',
     ];
 
     /**
@@ -47,12 +41,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            "idUser" => "integer",
-            "gender" => "enum",
-            "role" => "enum",
-            "membershipStrat" => "datetime",
-            "membershipEnd" => "datetime",
-            "password" => "hashed"
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 }
