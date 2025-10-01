@@ -1,8 +1,9 @@
 {
     "Sign In": "Sign In",
+    "Login": "Login",
     "Username": "Username",
     "Password": "Password",
-    "Forgot password?": "Forgot password?",
+    "Forgot Password?": "Forgot password?",
     "Remember Me": "Remember Me",
     "Don't have an account?": "Don't have an account?",
     "Register Now": "Register Now",
@@ -95,4 +96,3 @@
     "Membership": "Membership",
     "Transaction History": "Transaction History"
 }
-
