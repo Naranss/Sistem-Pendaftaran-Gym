@@ -1,4 +1,4 @@
-<x-layout title="">
+<x-layout title="Register">
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
