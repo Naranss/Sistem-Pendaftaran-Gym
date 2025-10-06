@@ -1,4 +1,4 @@
-<x-layout title="">
+<x-layout title="Login">
 
     {{-- Notifikasi Sukses --}}
     @if (session()->has('success'))
@@ -37,4 +37,4 @@
         </div>
     </form>
 
-</x-auth-layout>
+</x-layout>
