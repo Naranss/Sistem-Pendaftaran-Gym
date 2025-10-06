@@ -12,8 +12,8 @@ class Category extends Component
      * Create a new component instance.
      */
     public function __construct(
-        public string $icon,
-        public string $label
+        public string $label,
+        public string $route = '#'
     ) {}
 
     /**
@@ -22,5 +22,13 @@ class Category extends Component
     public function render(): View|Closure|string
     {
         return view('components.category');
+    }
+
+    /**
+     * Determine if the icon slot has been filled.
+     */
+    public function shouldRenderIcon(): bool
+    {
+        return isset($this->icon);
     }
 }

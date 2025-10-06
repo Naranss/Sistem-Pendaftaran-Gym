@@ -1,4 +1,13 @@
-<div {{ $attributes->merge(['class' => 'bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer']) }}>
-    <div class="text-4xl mb-3">{{ $icon }}</div>
-    <div class="text-gray-700 font-medium">{{ $label }}</div>
-</div>
+<a href="{{ $route }}" class="w-48 p-4 bg-white rounded-lg shadow-md flex flex-col items-center justify-center text-black hover:bg-gray-200 transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+    
+    {{-- Cek apakah slot 'icon' diisi --}}
+    @if (isset($icon))
+        <div class="text-gray-800">
+            {{-- Render konten dari slot 'icon' --}}
+            {{ $icon }}
+        </div>
+    @endif
+
+    {{-- Tampilkan label dari properti class --}}
+    <span class="font-semibold text-center mt-2">{{ $label }}</span>
+</a>
