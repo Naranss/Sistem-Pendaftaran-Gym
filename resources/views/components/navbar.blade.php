@@ -11,7 +11,6 @@
     <header class="flex justify-between items-center px-8 py-4 bg-black border-b border-gray-800">
         <div class="flex items-center gap-3">
             <img src="{{ asset('assets/logo/logo_white.png') }}" alt="YAPPFIT GYM" class="w-12 h-12"> 
-            <h1 class="text-xl font-bold tracking-widest">GYM BY YAPPING CLUB</h1>
         </div>
 
         <div class="flex items-center gap-4">

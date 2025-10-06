@@ -15,7 +15,7 @@
     @endif
 
     {{-- Form Login --}}
-    <form method="POST" action="{{ route('login-auth') }}" class="space-y-4">
+    <form method="POST" action="{{ route('login') }}" class="space-y-4">
         @csrf
         <h2 class="text-white text-3xl font-bold text-center">{{__('Login')}}</h2>
 
