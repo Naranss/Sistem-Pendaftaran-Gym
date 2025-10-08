@@ -14,6 +14,15 @@ Route::get('/', function () {
 
 Route::get('/suplemen', [SuplemenController::class, 'guestIndex'])->name('suplemen.guest');
 
+// Language Switch
+Route::post('/lang', function (\Illuminate\Http\Request $request) {
+    $locale = $request->input('locale');
+    if (in_array($locale, ['en', 'id'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch.post');
+
 // Auth Routes
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
