@@ -10,19 +10,23 @@ class Suplemen extends Model
 {
     use HasFactory;
 
+    /**
+     * Table name explicitly set to match migration (migration creates `suplemen`).
+     */
+    protected $table = 'suplemen';
+
     protected $fillable = [
-        "suplemen_id",
-        "nama_suplemen",
-        "deskripsi_suplemen",
-        "tanggal_kadaluarsa",
-        "harga",
-        "stok"
+        'nama_suplemen',
+        'deskripsi_suplemen',
+        'tanggal_kadaluarsa',
+        'harga',
+        'stok',
     ];
 
     protected $casts = [
-        "expired" => "datetime",
-        "harga" => "integer",
-        "stok" => "integer"
+        'tanggal_kadaluarsa' => 'datetime',
+        'harga' => 'integer',
+        'stok' => 'integer',
     ];
 
     public function scopeFilter(Builder $query, $name)
