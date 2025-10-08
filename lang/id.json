@@ -1,12 +1,14 @@
 {
     "Sign In": "Masuk",
     "Login": "Masuk",
+    "Log In": "Masuk",
     "Username": "Nama Pengguna",
     "Password": "Kata Sandi",
     "Forgot Password?": "Lupa kata sandi?",
     "Remember Me": "Ingat Saya",
     "Don't have an account?": "Tidak punya akun?",
     "Register Now": "Daftar Sekarang",
+    "Register": "Daftar",
     "Name": "Nama",
     "Email": "Email",
     "Phone Number": "Nomor Telepon",
@@ -75,6 +77,7 @@
     "Member": "Anggota",
     "Guest": "Pengunjung",
     "Trainer": "Pelatih",
+    "Trainers": "Pelatih",
     "Account Successfully Added!": "Akun Berhasil Ditambahkan",
     "Account Successfully Updated!": "Akun Berhasil Diperbarui",
     "Account Successfully Deleted!": "Akun Berhasil Dihapus",
@@ -88,11 +91,14 @@
     "Ends": "Berakhir",
     "Trainer Contract": "Kontrak Pelatih",
     "Confirm": "Konfirmasi",
+    "Confirm Password": "Konfirmasi Kata Sandi",
     "Receipt": "Struk",
     "Checkout": "Checkout",
     "Total": "Total",
     "Payment": "Pembayaran",
     "Schedule": "Jadwal",
     "Membership": "Keanggotaan",
-    "Transaction History": "Riwayat Transaksi"
+    "Transaction History": "Riwayat Transaksi",
+    "LOG OUT": "KELUAR",
+    "Categories": "Kategori"
 }
