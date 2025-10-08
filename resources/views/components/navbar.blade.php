@@ -34,9 +34,9 @@
             </div>
 
             @guest
-            <a href="{{ route('register') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">Register</a>
+            <a href="{{ route('register') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">{{ __('Register') }}</a>
             <span class="text-gray-500">|</span>
-            <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">Log In</a>
+            <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">{{ __('Log In') }}</a>
             @else
             <div class="flex items-center gap-2">
                 <img src="{{ Auth::user()->profile_photo_url ?? asset('assets/images/default.png') }}"
