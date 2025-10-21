@@ -23,4 +23,20 @@ class TrainerController extends Controller
             ->unique();
         return view('trainer.member', compact('members'));
     }
+    public function updateJadwal(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $jadwal = JadwalWorkout::findOrFail($id);
+        if ($jadwal->trainer_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $jadwal->update($validated);
+        return redirect()->route('trainer.jadwal')->with('success', 'Jadwal berhasil diperbarui.');
+    }
 }
