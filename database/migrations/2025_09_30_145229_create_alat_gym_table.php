@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    publiC function up(): void
     {
         Schema::create('alat_gym', function (Blueprint $table) {
             $table->id();
