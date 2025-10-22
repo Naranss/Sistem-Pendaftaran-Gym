@@ -22,7 +22,7 @@ class AkunSeeder extends Seeder
         // Admin
         $rows[] = [
             'nama' => 'MBAH SINGO',
-            'email' => 'admin@gmial.com',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('admin123'),
             'no_telp' => '081234567890',
             'jenis_kelamin' => 'LAKI-LAKI',
@@ -35,7 +35,7 @@ class AkunSeeder extends Seeder
         // Trainer
         $rows[] = [
             'nama' => 'COKI',
-            'email' => 'trainer@gmial.com',
+            'email' => 'trainer@gmail.com',
             'password' => Hash::make('trainer123'),
             'no_telp' => '123876548901',
             'jenis_kelamin' => 'LAKI-LAKI',
