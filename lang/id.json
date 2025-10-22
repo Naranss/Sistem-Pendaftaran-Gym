@@ -36,7 +36,7 @@
     "Login Attempt Failed!": "Upaya Masuk Gagal!",
     "Login Successful!": "Masuk Berhasil!",
     "Registration Successful! Please Log In!": "Pendaftaran Berhasil! Silakan Masuk!",
-    "Manage Transactions": "Kelola Transaksi",
+    "Manage Transaction": "Kelola Transaksi",
     "Transaction ID": "Kode Transaksi",
     "Account Name": "Nama Akun",
     "Item Name": "Nama Barang",
@@ -100,5 +100,7 @@
     "Membership": "Keanggotaan",
     "Transaction History": "Riwayat Transaksi",
     "LOG OUT": "KELUAR",
-    "Categories": "Kategori"
+    "Categories": "Kategori",
+    "Manage Equipment" : "Kelola Peralatan",
+    "Manage Account" : "Kelola Akun"
 }

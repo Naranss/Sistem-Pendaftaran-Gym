@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('kontrak', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_client')->constrained('akun')->onDelete('restrict');
             $table->timestamps();
         });
     }

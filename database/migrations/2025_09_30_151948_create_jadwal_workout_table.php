@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('jadwal_workout', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_client')->constrained('akun')->onDelete('restrict');
+            $table->dateTime('waktu_mulai');
+            $table->dateTime('waktu_selesai');
+            $table->string('jenis_workout');
             $table->timestamps();
         });
     }

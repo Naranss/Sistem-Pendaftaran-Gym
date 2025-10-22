@@ -36,7 +36,7 @@
     "Login Attempt Failed!": "Login Attempt Failed!",
     "Login Successful!": "Login Successful!",
     "Registration Successful! Please Log In!": "Registration Successful! Please Log In!",
-    "Manage Transactions": "Manage Transactions",
+    "Manage Transaction": "Manage Transaction",
     "Transaction ID": "Transaction ID",
     "Account Name": "Account Name",
     "Item Name": "Item Name",
@@ -100,5 +100,7 @@
     "Membership": "Membership",
     "Transaction History": "Transaction History",
     "LOG OUT": "LOG OUT",
-    "Categories": "Categories"
+    "Categories": "Categories",
+    "Manage Equipment" : "Manage Equipment",
+    "Manage Account" : "Manage Account"
 }
