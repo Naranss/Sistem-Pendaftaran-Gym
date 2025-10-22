@@ -20,22 +20,29 @@
                     <path d="M2 12h20"></path>
                     <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10A15.3 15.3 0 018 12 15.3 15.3 0 0112 2"></path>
                 </svg>
-                <select class="bg-gray-800 text-gray-300 text-sm border border-gray-600 rounded px-2 py-1 focus:outline-none">
-                    <option>English</option>
-                    <option>Bahasa Indonesia</option>
-                </select>
+
+                @php $current = app()->getLocale(); @endphp
+
+                <form action="{{ route('lang.switch.post') }}" method="POST" id="langForm">
+                    @csrf
+                    <select name="locale" onchange="document.getElementById('langForm').submit()"
+                        class="bg-gray-800 text-gray-300 text-sm border border-gray-600 rounded px-2 py-1 focus:outline-none">
+                        <option value="en" {{ $current === 'en' ? 'selected' : '' }}>English</option>
+                        <option value="id" {{ $current === 'id' ? 'selected' : '' }}>Bahasa Indonesia</option>
+                    </select>
+                </form>
             </div>
 
             @guest
-                <a href="{{ route('register') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">Register</a>
-                <span class="text-gray-500">|</span>
-                <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">Log In</a>
+            <a href="{{ route('register') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">{{ __('Register') }}</a>
+            <span class="text-gray-500">|</span>
+            <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white transition-colors duration-200">{{ __('Log In') }}</a>
             @else
-                <div class="flex items-center gap-2">
-                    <img src="{{ Auth::user()->profile_photo_url ?? asset('assets/images/default.png') }}"
-                         alt="Profile" class="w-10 h-10 rounded-full object-cover border-2 border-gray-700">
-                    <span class="text-sm text-gray-300">{{ Auth::user()->name }}</span>
-                </div>
+            <div class="flex items-center gap-2">
+                <img src="{{ Auth::user()->profile_photo_url ?? asset('assets/images/default.png') }}"
+                    alt="Profile" class="w-10 h-10 rounded-full object-cover border-2 border-gray-700">
+                <span class="text-sm text-gray-300">{{ Auth::user()->name }}</span>
+            </div>
             @endguest
 
             <a href="#" class="relative">
@@ -49,4 +56,5 @@
     </header>
 
 </body>
+
 </html>

@@ -1,12 +1,12 @@
-<x-layout title="Register">
+<x-layout title="{{ __('Register') }}">
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
-        <h2 class="text-white text-3xl font-bold mb-6 text-center">Register</h2>
+    <h2 class="text-white text-3xl font-bold mb-6 text-center">{{ __('Register') }}</h2>
 
         <!-- Username -->
         <div>
-            <input name="username" type="text" placeholder="Username" value="{{ old('username') }}"
+            <input name="username" type="text" placeholder="{{ __('Username') }}" value="{{ old('username') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
             @error('username')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -15,7 +15,7 @@
 
         <!-- Email -->
         <div>
-            <input name="email" type="email" placeholder="Email" value="{{ old('email') }}"
+            <input name="email" type="email" placeholder="{{ __('Email') }}" value="{{ old('email') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
             @error('email')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -24,7 +24,7 @@
 
         <!-- Password -->
         <div>
-            <input name="password" type="password" placeholder="Password"
+            <input name="password" type="password" placeholder="{{ __('Password') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
             @error('password')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -33,13 +33,13 @@
 
         <!-- Confirm Password -->
         <div>
-            <input name="password_confirmation" type="password" placeholder="Confirm Password"
+            <input name="password_confirmation" type="password" placeholder="{{ __('Confirm Password') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
         </div>
 
         <!-- Phone Number -->
         <div>
-            <input name="phone_number" type="text" placeholder="Phone Number" value="{{ old('phone_number') }}"
+            <input name="phone_number" type="text" placeholder="{{ __('Phone Number') }}" value="{{ old('phone_number') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
             @error('phone_number')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -48,11 +48,11 @@
 
         <!-- Gender Select -->
         <div>
-            <select name="gender"
+                <select name="gender"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Gender</option>
-                <option value="MALE" {{ old('gender') == 'MALE' ? 'selected' : '' }}>Male</option>
-                <option value="FEMALE" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>Female</option>
+                <option value="" disabled {{ old('gender') ? '' : 'selected' }}>{{ __('Gender') }}</option>
+                <option value="MALE" {{ old('gender') == 'MALE' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                <option value="FEMALE" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>{{ __('Female') }}</option>
             </select>
             @error('gender')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

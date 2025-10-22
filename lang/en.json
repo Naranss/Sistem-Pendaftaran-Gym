@@ -1,12 +1,14 @@
 {
     "Sign In": "Sign In",
     "Login": "Login",
+    "Log In": "Log In",
     "Username": "Username",
     "Password": "Password",
     "Forgot Password?": "Forgot password?",
     "Remember Me": "Remember Me",
     "Don't have an account?": "Don't have an account?",
     "Register Now": "Register Now",
+    "Register": "Register",
     "Name": "Name",
     "Email": "Email",
     "Phone Number": "Phone Number",
@@ -75,6 +77,7 @@
     "Member": "Member",
     "Guest": "Guest",
     "Trainer": "Trainer",
+    "Trainers": "Trainers",
     "Account Successfully Added!": "Account Successfully Added!",
     "Account Successfully Updated!": "Account Successfully Updated!",
     "Account Successfully Deleted!": "Account Successfully Deleted!",
@@ -88,11 +91,14 @@
     "Ends": "Ends",
     "Trainer Contract": "Trainer Contract",
     "Confirm": "Confirm",
+    "Confirm Password": "Confirm Password",
     "Receipt": "Receipt",
     "Checkout": "Checkout",
     "Total": "Total",
     "Payment": "Payment",
     "Schedule": "Schedule",
     "Membership": "Membership",
-    "Transaction History": "Transaction History"
+    "Transaction History": "Transaction History",
+    "LOG OUT": "LOG OUT",
+    "Categories": "Categories"
 }
