@@ -3,18 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Akun extends Model
+class Akun extends Authenticatable
 {
-    use HasFactory;
-
+    use HasFactory, Notifiable;
+    protected $table = 'akun';
     protected $fillable = [
-        "idUser",
         "nama",
         "password",
         "email",
-        "no_Telp",
+        "no_telp",
         "jenis_kelamin",
         "role",
         "membership_start",
@@ -23,9 +23,13 @@ class Akun extends Model
 
     protected $casts = [
         "gender" => "enum",
-        "role" => "enum",
         "membership_start" => "datetime",
         "membership_end" => "datetime",
         "password" => "hashed"
     ];
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
 }

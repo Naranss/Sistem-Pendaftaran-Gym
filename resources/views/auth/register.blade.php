@@ -6,9 +6,9 @@
 
         <!-- Username -->
         <div>
-            <input name="username" type="text" placeholder="{{ __('Username') }}" value="{{ old('username') }}"
+            <input name="name" type="text" placeholder="{{ __('Username') }}" value="{{ old('name') }}"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
-            @error('username')
+            @error('name')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -51,8 +51,8 @@
                 <select name="gender"
                 class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
                 <option value="" disabled {{ old('gender') ? '' : 'selected' }}>{{ __('Gender') }}</option>
-                <option value="MALE" {{ old('gender') == 'MALE' ? 'selected' : '' }}>{{ __('Male') }}</option>
-                <option value="FEMALE" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>{{ __('Female') }}</option>
+                <option value="LAKI-LAKI" {{ old('gender') == 'MALE' ? 'selected' : '' }}>{{ __('Male') }}</option>
+                <option value="PEREMPUAN" {{ old('gender') == 'FEMALE' ? 'selected' : '' }}>{{ __('Female') }}</option>
             </select>
             @error('gender')
                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
