@@ -12,7 +12,13 @@ Route::get('/', function () {
     return view('pages.homepage');
 })->name('homepage');
 
-Route::get('/suplemen', [SuplemenController::class, 'guestIndex'])->name('suplemen.guest');
+Route::prefix('guest')->name('guest.')->group(function () {
+    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/trainer', function() { return view('pages.guest.trainer'); })->name('trainer');
+    Route::get('/jadwal', function() { return view('pages.guest.jadwal'); })->name('jadwal');
+    Route::get('/price', function() { return view('pages.guest.price'); })->name('price');
+    Route::get('/about', function() { return view('pages.guest.about'); })->name('about');
+});
 
 // Language Switch
 Route::post('/lang', function (\Illuminate\Http\Request $request) {
@@ -22,6 +28,10 @@ Route::post('/lang', function (\Illuminate\Http\Request $request) {
     }
     return redirect()->back();
 })->name('lang.switch.post');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -41,7 +51,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // Trainer Routes
 Route::middleware(['auth', 'role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
     Route::get('/jadwal', [TrainerController::class, 'jadwal'])->name('jadwal');
-    Route::get('/member', [TrainerController::class, 'member'])->name('member');
 });
 
 // Member Routes
