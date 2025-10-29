@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Akun;
 use App\Models\AlatGym;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class AdminController extends Controller
 
     public function akun()
     {
-        $users = User::all();
+        $users = Akun::all();
         return view('admin.akun', compact('users'));
     }
 
