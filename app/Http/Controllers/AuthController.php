@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Akun;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -26,9 +26,7 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+        return back()->with('loginError', 'Login failed!');
     }
 
     public function registerForm()
@@ -38,16 +36,23 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'string', 'min:8'],
+            'phone_number' => ['required', 'string', 'max:15'],
+            'gender' => ['required', 'in:LAKI-LAKI,PEREMPUAN']
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
+        // dd($validated);
+        $user = Akun::create([
+            'nama' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'no_telp' => $validated['phone_number'],
+            'jenis_kelamin' => $validated['gender']
         ]);
 
         Auth::login($user);

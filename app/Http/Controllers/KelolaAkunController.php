@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use App\Models\Akun;
 
 class KelolaAkunController extends Controller
 {
@@ -20,8 +20,8 @@ class KelolaAkunController extends Controller
         if (Auth::user()->role != 'ADMIN') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        // Assuming there's a User model to fetch user accounts
-        $users = User::all();
+        // Assuming there's a Akun model to fetch user accounts
+        $users = Akun::all();
         return response()->json($users);
     }
     public function tambahAkun(Request $request)
@@ -36,7 +36,7 @@ class KelolaAkunController extends Controller
             'role' => 'required|string|in:ADMIN,USER',
         ]);
         $validated['password'] = bcrypt($validated['password']);
-        $user = User::create($validated);
+        $user = Akun::create($validated);
         return response()->json(['message' => 'Akun berhasil ditambahkan', 'data' => $user]);
     }
     public function hapusAkun($id)
@@ -44,7 +44,7 @@ class KelolaAkunController extends Controller
         if (Auth::user()->role != 'ADMIN') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        $user = User::find($id);
+        $user = Akun::find($id);
         if (!$user) {
             return response()->json(['error' => 'Akun tidak ditemukan'], 404);
         }
@@ -56,7 +56,7 @@ class KelolaAkunController extends Controller
         if (Auth::user()->role != 'ADMIN') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        $user = User::find($id);
+        $user = Akun::find($id);
         if (!$user) {
             return response()->json(['error' => 'Akun tidak ditemukan'], 404);
         }

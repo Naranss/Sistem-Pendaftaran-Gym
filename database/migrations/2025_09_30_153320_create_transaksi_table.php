@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
             $table->date('tanggal');
-            $table->foreignId('id_produk')->nullable()->constrained('keranjang')->onDelete('cascade');
-            $table->foreignId('id_kontrak')->nullable()->constrained('kontrak')->onDelete('cascade');
+            $table->foreignId('id_produk')->nullable()->constrained('keranjang')->onDelete('restrict');
+            $table->foreignId('id_kontrak')->nullable()->constrained('kontrak')->onDelete('restrict');
             $table->string('membership')->nullable();
             $table->integer('jumlah_produk')->nullable();
             $table->integer('harga_produk')->nullable();

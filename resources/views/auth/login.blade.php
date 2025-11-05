@@ -19,7 +19,7 @@
         @csrf
         <h2 class="text-white text-3xl font-bold text-center">{{__('Login')}}</h2>
 
-        <input name="username" type="text" placeholder="{{__('Username')}}"
+        <input name="email" type="text" placeholder="{{__('Email')}}"
             class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
 
         <input name="password" type="password" placeholder="{{__('Password')}}"
