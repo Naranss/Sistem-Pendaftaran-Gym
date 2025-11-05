@@ -2,17 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BayarController;
+use App\Http\Controllers\CatatTransaksiController;
+use App\Http\Controllers\KelolaAkunController;
+use App\Http\Controllers\KelolaAlatGymController;
+use App\Http\Controllers\KelolaSuplemenController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PerbaruiJadwalController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
+use Database\Seeders\AlatGymSeeder;
 
 // Guest Routes
 Route::get('/', function () {
     return view('pages.homepage');
 })->name('homepage');
 
-Route::prefix('guest')->name('guest.')->group(function () {
+Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
     Route::get('/trainer', function() { return view('pages.guest.trainer'); })->name('trainer');
     Route::get('/jadwal', function() { return view('pages.guest.jadwal'); })->name('jadwal');
@@ -41,23 +47,23 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/suplemen', [AdminController::class, 'suplemen'])->name('suplemen');
-    Route::get('/alat-gym', [AdminController::class, 'alatGym'])->name('alat-gym');
-    Route::get('/akun', [AdminController::class, 'akun'])->name('akun');
-    Route::get('/transaksi', [AdminController::class, 'transaksi'])->name('transaksi');
+Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
+    Route::get('/suplemen', [KelolaSuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/alat-gym', [KelolaAlatGymController::class, 'index'])->name('alat-gym');
+    Route::get('/akun', [KelolaAkunController::class, 'index'])->name('akun');
+    Route::get('/transaksi', [CatatTransaksiController::class, 'index'])->name('transaksi');
 });
 
 // Trainer Routes
-Route::middleware(['auth', 'role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
+Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {
     Route::get('/jadwal', [TrainerController::class, 'jadwal'])->name('jadwal');
 });
 
 // Member Routes
-Route::middleware(['auth', 'role:member'])->prefix('member')->name('member.')->group(function () {
-    Route::get('/suplemen', [MemberController::class, 'suplemen'])->name('suplemen');
-    Route::get('/trainer', [MemberController::class, 'trainer'])->name('trainer');
-    Route::get('/jadwal', [MemberController::class, 'jadwal'])->name('jadwal');
-    Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
-    Route::get('/transaksi', [MemberController::class, 'transaksi'])->name('transaksi');
+Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
+    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'index'])->name('jadwal');
+    // Route::get('/membership', [MembershipController::class, 'membership'])->name('membership');
+    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
 });
