@@ -8,23 +8,13 @@ use Illuminate\Support\Facades\Auth;
 
 class KelolaSuplemenController extends Controller
 {
-    // Redirect to the guest suplemen view
+    // List of supplements with search and pagination
     public function index()
     {
-        if (Auth::user()->role != 'ADMIN') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
-        }
-        return view('guest.suplemen');
+        $suplemen = Suplemen::filter(request(['search']))->paginate(10);
+        return view('admin.suplemen', compact('suplemen'));
     }
 
-    public function getDataKelolaSuplemen()
-    {
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        $suplemen = Suplemen::all();
-        return response()->json($suplemen);
-    }
     public function tambahSuplemen(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
