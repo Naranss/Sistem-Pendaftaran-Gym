@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalWorkout;
 use App\Models\Akun;
+use App\Models\Kontrak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PerbaruiJadwalController extends Controller
 {
-    public function dataJadwalDanClient()
+    public function client()
     {
         $user = Auth::user();
 
@@ -17,106 +18,165 @@ class PerbaruiJadwalController extends Controller
             abort(403, 'Silakan login terlebih dahulu.');
         }
 
-        // Member hanya bisa melihat jadwal miliknya sendiri
-        if ($user->role == 'member') {
-            $jadwalWorkout = JadwalWorkout::select(
-                'jadwal_workout.*',
-                'akun.nama as client_name'
-            )
-                ->join('akun', 'jadwal_workout.id_client', '=', 'akun.id')
-                ->where('jadwal_workout.id_client', $user->id)
-                ->orderBy('waktu_mulai', 'asc')
-                ->get();
+        // Initialize empty collection to hold matched jadwal records
+        $jadwalWorkout = collect();
+
+        // Check for active contracts related to the current user.
+        // We treat 'active' as having a `durasiKontrak` in the future.
+        $contractsQuery = Kontrak::query();
+
+        if ($user->role === 'member') {
+            $contractsQuery->where('idClient', $user->id);
+        } elseif ($user->role === 'trainer') {
+            $contractsQuery->where('idTrainer', $user->id);
         }
 
-        // Trainer bisa melihat semua jadwal client
-        elseif ($user->role == 'trainer') {
-            $jadwalWorkout = JadwalWorkout::select(
-                'jadwal_workout.*',
-                'akun.nama as client_name'
-            )
-                ->join('akun', 'jadwal_workout.id_client', '=', 'akun.id')
-                ->orderBy('waktu_mulai', 'asc')
-                ->get();
+        // Only consider contracts that are still active (durasiKontrak > now)
+        $contracts = $contractsQuery->where('tanggal_berakhir', '>', now())->get();
+
+        // If there are active contracts, check for jadwal entries matching the client+trainer combination
+        if ($contracts->isNotEmpty()) {
+            foreach ($contracts as $kontrak) {
+                // Normalize field names from Kontrak model
+                $clientId = $kontrak->id_client ?? null;
+                $trainerId = $kontrak->id_trainer ?? null;
+
+                if ($clientId && $trainerId) {
+                    // Use `tabel_jadwal` as the identifying value for a client+trainer schedule
+                    $tabelValue = $clientId . '_' . $trainerId;
+
+                    $found = JadwalWorkout::where('tabel_jadwal', $tabelValue)->get();
+
+                    if ($found->isNotEmpty()) {
+                        $jadwalWorkout = $jadwalWorkout->merge($found);
+                    } else {
+                        // No jadwal entries exist for this pairing — create 28 entries (minggu 1-4, hari 1-7)
+                        $newEntries = collect();
+
+                        foreach (range(1, 4) as $minggu) {
+                            foreach (range(1, 7) as $hari) {
+                                $entry = JadwalWorkout::create([
+                                    'tabel_jadwal' => $tabelValue,
+                                    'minggu_ke' => $minggu,
+                                    'hari' => $hari,
+                                    'jenis_workout' => 'Belum Ditentukan'
+                                ]);
+
+                                $newEntries->push($entry);
+                            }
+                        }
+
+                        $jadwalWorkout = $jadwalWorkout->merge($newEntries);
+                    }
+                }
+            }
         }
 
-        // Role selain member & trainer dilarang
-        else {
-            abort(403, 'Anda tidak memiliki akses ke halaman jadwal.');
-        }
-
-        return view('jadwal.index', compact('jadwalWorkout'));
+        // Return the view with the (possibly empty) collection of jadwalWorkout
+        return view('pages.guest.jadwal', compact('jadwalWorkout'));
     }
 
-    public function pilihanClientSesi()
+    public function trainer()
     {
-        $clients = Akun::where('role', 'member')
-            ->select('id', 'nama')
-            ->orderBy('nama', 'asc')
+        $contracts = Kontrak::where('id_trainer', Auth::id())
+            ->where('tanggal_berakhir', '>', now())
             ->get();
 
-        return response()->json($clients);
+        return view('pages.trainer.clients', compact('contracts'));
+    }
+    
+    public function edit($contract) {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403, 'Silakan login terlebih dahulu.');
+        }
+
+        // Load kontrak and ensure the current trainer owns it
+        $kontrak = Kontrak::findOrFail($contract);
+
+        if ($kontrak->id_trainer !== $user->id) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $client = Akun::find($kontrak->id_client);
+
+        // Determine tabel_jadwal key and ensure jadwal entries exist
+        $tabelValue = $kontrak->id_client . '_' . $kontrak->id_trainer;
+
+        $jadwal = JadwalWorkout::where('tabel_jadwal', $tabelValue)->orderBy('minggu_ke')->orderBy('hari')->get();
+
+        if ($jadwal->isEmpty()) {
+            $created = collect();
+            foreach (range(1, 4) as $minggu) {
+                foreach (range(1, 7) as $hari) {
+                    $entry = JadwalWorkout::create([
+                        'tabel_jadwal' => $tabelValue,
+                        'minggu_ke' => $minggu,
+                        'hari' => $hari,
+                        'jenis_workout' => 'Belum Ditentukan'
+                    ]);
+                    $created->push($entry);
+                }
+            }
+            $jadwal = $created;
+        }
+
+        return view('pages.trainer.edit_jadwal', compact('jadwal', 'kontrak', 'client', 'tabelValue'));
     }
 
-    public function perubahanJadwal(Request $request)
+    public function update(Request $request)
     {
         $user = Auth::user();
 
-        // Member TIDAK BOLEH update jadwal
-        if ($user->role == 'member') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda tidak memiliki izin untuk memperbarui jadwal.'
-            ], 403);
+        if (!$user) {
+            abort(403, 'Silakan login terlebih dahulu.');
         }
 
-        // Pastikan yang bisa update hanya trainer
-        if ($user->role != 'trainer') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Akses ditolak.'
-            ], 403);
+        // Only trainers should be able to update this form
+        if ($user->role !== 'TRAINER') {
+            abort(403, 'Akses ditolak.');
         }
 
-        $request->validate([
-            'id' => 'required|exists:jadwal_workout,id',
-            'id_client' => [
-                'required',
-                'exists:akun,id',
-                function ($attribute, $value, $fail) {
-                    $client = Akun::find($value);
-                    if (!$client || $client->role != 'member') {
-                        $fail('Client harus member terlebih dahulu.');
-                    }
-                    if ($client->membership_end && now()->isAfter($client->membership_end)) {
-                        $fail('Membership client sudah berakhir.');
-                    }
+        // Update existing workouts
+        $existing = $request->input('jenis_workout', []);
+        if (is_array($existing)) {
+            foreach ($existing as $id => $jenis) {
+                $jenis = trim($jenis);
+                if ($jenis === null) continue;
+                $jadwal = JadwalWorkout::find($id);
+                if ($jadwal) {
+                    $jadwal->jenis_workout = $jenis;
+                    $jadwal->save();
                 }
-            ],
-            'waktu_mulai' => 'required|date',
-            'waktu_selesai' => 'required|date|after:waktu_mulai',
-            'jenis_workout' => 'required|string'
-        ]);
-
-        try {
-            $jadwal = JadwalWorkout::findOrFail($request->id);
-
-            $jadwal->update([
-                'id_client' => $request->id_client,
-                'waktu_mulai' => $request->waktu_mulai,
-                'waktu_selesai' => $request->waktu_selesai,
-                'jenis_workout' => $request->jenis_workout
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Jadwal berhasil diperbarui.'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memperbarui jadwal: ' . $e->getMessage()
-            ], 500);
+            }
         }
+
+        // Create new workouts submitted in the new_workout[minggu][hari] inputs (if any)
+        $tabelValue = $request->input('tabel_jadwal');
+        $new = $request->input('new_workout', []);
+        if ($tabelValue && is_array($new)) {
+            foreach ($new as $minggu => $days) {
+                if (!is_array($days)) continue;
+                foreach ($days as $hari => $jenis) {
+                    $jenis = trim($jenis);
+                    if ($jenis === null || $jenis === '') continue;
+                    JadwalWorkout::create([
+                        'tabel_jadwal' => $tabelValue,
+                        'minggu_ke' => (int)$minggu,
+                        'hari' => (int)$hari,
+                        'jenis_workout' => $jenis,
+                    ]);
+                }
+            }
+        }
+
+        // Redirect back to the same contract edit page if contract provided, otherwise back
+        $contractId = $request->input('contract');
+        if ($contractId) {
+            return redirect()->route('trainer.clients.edit', $contractId)->with('success', 'Jadwal berhasil disimpan.');
+        }
+
+        return redirect()->back()->with('success', 'Jadwal berhasil disimpan.');
     }
 }
