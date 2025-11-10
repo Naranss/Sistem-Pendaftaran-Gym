@@ -71,7 +71,7 @@
                         <path d="M16 10a4 4 0 01-8 0"></path>
                     </svg>
                     @php
-                        $cartCount = \App\Models\Keranjang::where('id_user', Auth::id())->count();
+                        $cartCount = \App\Models\Keranjang::where('user_id', Auth::id())->count();
                     @endphp
                     @if($cartCount > 0)
                         <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
