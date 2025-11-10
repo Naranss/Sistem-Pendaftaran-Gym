@@ -63,13 +63,23 @@
             </div>
 
             <!-- Cart Icon -->
-            <a href="#" class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-300 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 01-8 0"></path>
-                </svg>
-            </a>
+            @auth
+                <a href="{{ route('cart.index') }}" class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-300 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 01-8 0"></path>
+                    </svg>
+                    @php
+                        $cartCount = \App\Models\Keranjang::where('id_user', Auth::id())->count();
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
+            @endauth
 
             <!-- Auth Links -->
             @guest
