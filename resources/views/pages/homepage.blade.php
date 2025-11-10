@@ -4,7 +4,7 @@
 
     {{-- ================= Hero Section ================= --}}
     <section class="relative overflow-hidden bg-cover bg-center h-96" 
-             style="background-image: url('{{ asset('assets/background/background.jpg') }}');">
+        style="background-image: url('{{ asset("assets/background/background.jpg") }}');">
         <div class="absolute inset-0 bg-black bg-opacity-60"></div>
 
         <div class="relative container mx-auto px-6 h-full flex items-center justify-center text-center">
@@ -113,7 +113,7 @@
                 </x-slot>
             </x-category>
 
-            <x-category label="{{ __('Transaction History') }}" route="{{ route('member.transaksi') }}">
+            <x-category label="{{ __('Transaction History') }}" route="{{ route('member.riwayat') }}">
                 <x-slot name="icon">
                     <svg class="w-10 h-10 text-gray-300 group-hover:text-red-500 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -147,7 +147,7 @@
                 </x-slot>
             </x-category>
 
-            <x-category label="{{ __('Price List') }}" route="{{ route('guest.price') }}">
+            <x-category label="{{ __('Membership') }}" route="{{ route('guest.membership') }}">
                 <x-slot name="icon">
                     <svg class="w-10 h-10 text-gray-300 group-hover:text-red-500 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
@@ -155,7 +155,7 @@
                 </x-slot>
             </x-category>
 
-            <x-category label="{{ __('About Us') }}" route="{{ route('guest.about') }}">
+            <x-category label="{{ __('Transaction History') }}" route="{{ route('guest.riwayat') }}">
                 <x-slot name="icon">
                     <svg class="w-10 h-10 text-gray-300 group-hover:text-red-500 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />

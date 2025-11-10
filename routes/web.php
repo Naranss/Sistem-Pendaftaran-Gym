@@ -9,6 +9,8 @@ use App\Http\Controllers\KelolaAlatGymController;
 use App\Http\Controllers\KelolaSuplemenController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PerbaruiJadwalController;
+use App\Http\Controllers\PerbaruiMembershipController;
+use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
@@ -20,10 +22,18 @@ Route::get('/', function () {
 
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
-    Route::get('/trainer', function() { return view('pages.guest.trainer'); })->name('trainer');
-    Route::get('/jadwal', function() { return view('pages.guest.jadwal'); })->name('jadwal');
-    Route::get('/price', function() { return view('pages.guest.price'); })->name('price');
-    Route::get('/about', function() { return view('pages.guest.about'); })->name('about');
+    Route::get('/trainer', function () {
+        return view('pages.guest.trainer');
+    })->name('trainer');
+    Route::get('/jadwal', function () {
+        return view('pages.guest.jadwal');
+    })->name('jadwal');
+    Route::get('/price', function () {
+        return view('pages.guest.price');
+    })->name('price');
+    Route::get('/about', function () {
+        return view('pages.guest.about');
+    })->name('about');
 });
 
 // Language Switch
@@ -40,11 +50,34 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 // Auth Routes
-Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Guest Routes
+Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
+    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'dataJadwalDanClient'])->name('jadwal');
+    Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
+    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
+    Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+});
+
+// Member Routes
+Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
+    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
+    Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
+    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
+    Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+});
 
 // Admin Routes
 Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
@@ -56,14 +89,9 @@ Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'a
 
 // Trainer Routes
 Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {
-    Route::get('/jadwal', [TrainerController::class, 'jadwal'])->name('jadwal');
-});
-
-// Member Routes
-Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
-    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
-    Route::get('/jadwal', [PerbaruiJadwalController::class, 'index'])->name('jadwal');
-    // Route::get('/membership', [MembershipController::class, 'membership'])->name('membership');
-    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'trainer'])->name('jadwal');
+    // Edit client/contract form for trainers
+    Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
+    // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
+    Route::post('/jadwal/update', [PerbaruiJadwalController::class, 'update'])->name('jadwal.update');
 });
