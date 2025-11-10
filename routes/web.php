@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BayarController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CatatTransaksiController;
 use App\Http\Controllers\KelolaAkunController;
 use App\Http\Controllers\KelolaAlatGymController;
@@ -45,10 +46,6 @@ Route::post('/lang', function (\Illuminate\Http\Request $request) {
     return redirect()->back();
 })->name('lang.switch.post');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
 // Auth Routes
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -58,6 +55,14 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Profile Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('pages.dashboard');
+    })->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 // Guest Routes
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
