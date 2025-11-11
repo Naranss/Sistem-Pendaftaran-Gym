@@ -22,6 +22,8 @@ class Transaksi extends Model
         'harga_kontrak',
         'harga_membership',
         'metode_pembayaran',
+        'user_id',
+        'status',
     ];
 
     # relasi ke tabel keranjang
@@ -34,5 +36,11 @@ class Transaksi extends Model
     public function kontrak()
     {
         return $this->belongsTo(Kontrak::class, 'id_kontrak');
+    }
+
+    # relasi ke tabel akun (user)
+    public function user()
+    {
+        return $this->belongsTo(Akun::class, 'user_id');
     }
 }

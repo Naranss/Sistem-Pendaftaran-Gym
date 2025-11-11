@@ -9,51 +9,67 @@ use Illuminate\Support\Facades\Auth;
 class KelolaSuplemenController extends Controller
 {
     // List of supplements with search and pagination
-    public function index()
+    public function index(Request $request)
     {
-        $suplemen = Suplemen::filter(request(['search']))->paginate(10);
-        return view('admin.suplemen', compact('suplemen'));
+        $query = Suplemen::query();
+        
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_suplemen', 'like', '%' . $request->search . '%');
+        }
+        
+        $suplemen = $query->orderBy('created_at', 'desc')->paginate(10);
+        return view('pages.admin.kel_suplemen', compact('suplemen'));
     }
 
-    public function tambahSuplemen(Request $request)
+    public function store(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
+        
         $validated = $request->validate([
             'nama_suplemen' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'harga' => 'required|numeric',
+            'deskripsi_suplemen' => 'nullable|string',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+            'tanggal_kadaluarsa' => 'required|date',
         ]);
-        $suplemen = Suplemen::create($validated);
-        return response()->json(['message' => 'Suplemen berhasil ditambahkan', 'data' => $suplemen]);
+        
+        Suplemen::create($validated);
+        
+        return redirect()->route('admin.suplemen')->with('success', 'Suplemen berhasil ditambahkan');
     }
-    public function hapusSuplemen($id)
+
+    public function update(Request $request, $id)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
-        $suplemen = Suplemen::find($id);
-        if (!$suplemen) {
-            return response()->json(['error' => 'Suplemen tidak ditemukan'], 404);
-        }
-        $suplemen->delete();
-    }
-    public function updateSuplemen(Request $request, $suplemen)
-    {
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        $suplemen = Suplemen::find($suplemen);
-        if (!$suplemen) {
-            return response()->json(['error' => 'Suplemen tidak ditemukan'], 404);
-        }
+        
+        $suplemen = Suplemen::findOrFail($id);
+        
         $validated = $request->validate([
             'nama_suplemen' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'harga' => 'required|numeric',
+            'deskripsi_suplemen' => 'nullable|string',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+            'tanggal_kadaluarsa' => 'required|date',
         ]);
+        
         $suplemen->update($validated);
-        return response()->json(['message' => 'Suplemen berhasil diperbarui', 'data' => $suplemen]);
+        
+        return redirect()->route('admin.suplemen')->with('success', 'Suplemen berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        if (Auth::user()->role != 'ADMIN') {
+            return redirect()->back()->with('error', 'Unauthorized');
+        }
+        
+        $suplemen = Suplemen::findOrFail($id);
+        $suplemen->delete();
+        
+        return redirect()->route('admin.suplemen')->with('success', 'Suplemen berhasil dihapus');
     }
 }

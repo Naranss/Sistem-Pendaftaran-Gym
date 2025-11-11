@@ -8,61 +8,65 @@ use App\Models\AlatGym;
 
 class KelolaAlatGymController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
+            return redirect()->route('homepage')->with('error', 'Unauthorized');
         }
-        return view('admin.kelola_alat_gym');
+        
+        $query = AlatGym::query();
+        
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_alat', 'like', '%' . $request->search . '%');
+        }
+        
+        $alatGym = $query->orderBy('created_at', 'desc')->paginate(10);
+        return view('pages.admin.kel_alat_gym', compact('alatGym'));
     }
-    // get all alat gym data
-    public function getDataAlatGym()
-    {
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
 
-        $alatGym = AlatGym::all();
-        return response()->json($alatGym);
-    }
-    // delete alat gym by id
-    public function hapusAlatGym($alatGym){
+    public function store(Request $request)
+    {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
-        $alatGym = AlatGym::find($alatGym);
-        if (!$alatGym) {
-            return response()->json(['error' => 'Alat gym tidak ditemukan'], 404);
-        }
-        $alatGym->delete();
-        return response()->json(['message' => 'Alat gym berhasil dihapus']);
-    }
-    // add new alat gym
-    public function tambahAlatGym(Request $request){
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        
         $validated = $request->validate([
             'nama_alat' => 'required|string|max:255',
-            'kondisi' => 'required|string|max:255',
+            'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat,Perbaikan',
         ]);
-        $alatGym = AlatGym::create($validated);
-        return response()->json(['message' => 'Alat gym berhasil ditambahkan', 'data' => $alatGym]);
+        
+        AlatGym::create($validated);
+        
+        return redirect()->route('admin.alat-gym')->with('success', 'Alat gym berhasil ditambahkan');
     }
-    // update identity of alat gym by id
-    public function updateAlatGym(Request $request, $alatGym){
+
+    public function update(Request $request, $id)
+    {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
-        $alatGym = AlatGym::find($alatGym);
-        if (!$alatGym) {
-            return response()->json(['error' => 'Alat gym tidak ditemukan'], 404);
-        }
+        
+        $alatGym = AlatGym::findOrFail($id);
+        
         $validated = $request->validate([
-            'nama_alat' => 'sometimes|required|string|max:255',
-            'kondisi' => 'sometimes|required|string|max:255',
+            'nama_alat' => 'required|string|max:255',
+            'kondisi' => 'required|string|in:Baik,Rusak Ringan,Rusak Berat,Perbaikan',
         ]);
+        
         $alatGym->update($validated);
-        return response()->json(['message' => 'Alat gym berhasil diperbarui', 'data' => $alatGym]);
+        
+        return redirect()->route('admin.alat-gym')->with('success', 'Alat gym berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        if (Auth::user()->role != 'ADMIN') {
+            return redirect()->back()->with('error', 'Unauthorized');
+        }
+        
+        $alatGym = AlatGym::findOrFail($id);
+        $alatGym->delete();
+        
+        return redirect()->route('admin.alat-gym')->with('success', 'Alat gym berhasil dihapus');
     }
 }

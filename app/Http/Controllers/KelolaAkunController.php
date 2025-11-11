@@ -8,68 +8,89 @@ use App\Models\Akun;
 
 class KelolaAkunController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
+            return redirect()->route('homepage')->with('error', 'Unauthorized');
         }
-        return view('admin.kelola_akun');
+        
+        $query = Akun::query();
+        
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('no_telp', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        $akun = $query->orderBy('created_at', 'desc')->paginate(10);
+        return view('pages.admin.kel_akun', compact('akun'));
     }
-    public function getDataKelolaAkun()
+
+    public function store(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
-        // Assuming there's a Akun model to fetch user accounts
-        $users = Akun::all();
-        return response()->json($users);
-    }
-    public function tambahAkun(Request $request)
-    {
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:akun,email',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:ADMIN,USER',
+            'no_telp' => 'required|string|max:15',
+            'jenis_kelamin' => 'required|in:LAKI-LAKI,PEREMPUAN',
+            'role' => 'required|in:PENGUNJUNG,MEMBER,TRAINER,ADMIN',
         ]);
+        
         $validated['password'] = bcrypt($validated['password']);
-        $user = Akun::create($validated);
-        return response()->json(['message' => 'Akun berhasil ditambahkan', 'data' => $user]);
+        Akun::create($validated);
+        
+        return redirect()->route('admin.akun')->with('success', 'Akun berhasil ditambahkan');
     }
-    public function hapusAkun($id)
+
+    public function update(Request $request, $id)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect()->back()->with('error', 'Unauthorized');
         }
-        $user = Akun::find($id);
-        if (!$user) {
-            return response()->json(['error' => 'Akun tidak ditemukan'], 404);
-        }
-        $user->delete();
-        return response()->json(['message' => 'Akun berhasil dihapus']);
-    }
-    public function updateAkun(Request $request, $id)
-    {
-        if (Auth::user()->role != 'ADMIN') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-        $user = Akun::find($id);
-        if (!$user) {
-            return response()->json(['error' => 'Akun tidak ditemukan'], 404);
-        }
+        
+        $akun = Akun::findOrFail($id);
+        
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'sometimes|required|string|min:8',
-            'role' => 'sometimes|required|string|in:ADMIN,USER',
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:akun,email,' . $id,
+            'password' => 'nullable|string|min:8',
+            'no_telp' => 'required|string|max:15',
+            'jenis_kelamin' => 'required|in:LAKI-LAKI,PEREMPUAN',
+            'role' => 'required|in:PENGUNJUNG,MEMBER,TRAINER,ADMIN',
         ]);
-        if (isset($validated['password'])) {
+        
+        if (isset($validated['password']) && $validated['password']) {
             $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
         }
-        $user->update($validated);
-        return response()->json(['message' => 'Akun berhasil diperbarui', 'data' => $user]);
+        
+        $akun->update($validated);
+        
+        return redirect()->route('admin.akun')->with('success', 'Akun berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        if (Auth::user()->role != 'ADMIN') {
+            return redirect()->back()->with('error', 'Unauthorized');
+        }
+        
+        // Prevent admin from deleting themselves
+        if (Auth::id() == $id) {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus akun sendiri');
+        }
+        
+        $akun = Akun::findOrFail($id);
+        $akun->delete();
+        
+        return redirect()->route('admin.akun')->with('success', 'Akun berhasil dihapus');
     }
 }

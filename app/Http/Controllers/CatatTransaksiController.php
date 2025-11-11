@@ -8,12 +8,23 @@ use Illuminate\Support\Facades\Auth;
 class CatatTransaksiController extends Controller
 {
     // Redirect to page transaksi
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
+            return redirect()->route('homepage')->with('error', 'Unauthorized');
         }
-        return view('admin.catat_transaksi'); //masih bisa berubah
+        
+        $query = Transaksi::with(['user', 'keranjang.suplemen', 'kontrak']);
+        
+        if ($request->has('search') && $request->search) {
+            $query->whereHas('user', function($q) use ($request) {
+                $q->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        $transaksi = $query->orderBy('tanggal', 'desc')->orderBy('created_at', 'desc')->paginate(10);
+        return view('pages.admin.kel_transaksi', compact('transaksi'));
     }
     public function formTransaksiBaru(){
         if (Auth::user()->role != 'ADMIN') {
