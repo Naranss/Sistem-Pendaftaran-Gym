@@ -90,6 +90,7 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
     Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
+    Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
     Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
 });

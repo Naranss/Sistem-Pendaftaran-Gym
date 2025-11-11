@@ -31,10 +31,83 @@ class MemberController extends Controller
     public function membership()
     {
         $user = Auth::user();
-        $akun = $user ? Akun::where('idUser', $user->idUser)->first() : null;
+        $akun = $user; // Auth::user() already returns Akun instance
         $status_membership = $akun ? $this->checkMembershipStatus($akun) : 'tidak_aktif';
 
-        return view('member.membership', compact('akun', 'status_membership'));
+        return view('pages.member.membership', compact('akun', 'status_membership'));
+    }
+
+    public function updateMembership(Request $request)
+    {
+        $request->validate([
+            'membership' => 'required|in:bulanan,per3bulan,tahunan',
+            'harga_membership' => 'required|numeric|min:0',
+            'metode_pembayaran' => 'required|in:transfer,cash,e-wallet'
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Silakan login untuk memperbarui membership');
+        }
+
+        try {
+            $akun = $user; // Auth::user() already returns Akun instance
+            
+            if (!$akun) {
+                return redirect()->back()->with('error', 'Akun tidak ditemukan');
+            }
+
+            // Mencari atau membuat entri keranjang untuk pembaruan membership
+            $keranjang = Keranjang::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'id_suplemen' => null
+                ],
+                [
+                    'membership' => $request->membership,
+                    'harga_membership' => $request->harga_membership,
+                    'jumlah_produk' => 1
+                ]
+            );
+
+            // Memperbarui detail membership jika keranjang sudah ada
+            if (!$keranjang->wasRecentlyCreated) {
+                $keranjang->update([
+                    'membership' => $request->membership,
+                    'harga_membership' => $request->harga_membership,
+                    'jumlah_produk' => 1
+                ]);
+            }
+
+            // Membuat catatan transaksi
+            $transaksi = Transaksi::create([
+                'tanggal' => Carbon::now(),
+                'id_produk' => $keranjang->id,
+                'id_kontrak' => null,
+                'membership' => $request->membership,
+                'jumlah_produk' => 1,
+                'harga_produk' => 0,
+                'harga_kontrak' => 0,
+                'harga_membership' => $request->harga_membership,
+                'metode_pembayaran' => $request->metode_pembayaran,
+                'user_id' => $user->id
+            ]);
+
+            // Menghitung tanggal mulai dan akhir membership
+            $start_date = $this->calculateMembershipStartDate($akun);
+            $end_date = $this->calculateMembershipEndDate($start_date, $request->membership);
+
+            // Memperbarui tanggal membership pengguna
+            $akun->update([
+                'membership_start' => $start_date,
+                'membership_end' => $end_date
+            ]);
+
+            return redirect()->route('member.membership')->with('success', 'Membership berhasil diperbarui dan ditambahkan ke keranjang');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui membership: ' . $e->getMessage());
+        }
     }
 
     public function transaksi()
@@ -51,7 +124,7 @@ class MemberController extends Controller
             return redirect()->route('login')->with('error', 'Silakan login untuk mengakses formulir membership');
         }
 
-        $akun = Akun::where('idUser', $user->idUser)->first();
+        $akun = $user; // Auth::user() already returns Akun instance
 
         return view('member.formulir_membership', [
             'user' => $akun,
@@ -73,9 +146,14 @@ class MemberController extends Controller
         }
 
         try {
+            $akun = $user; // Auth::user() already returns Akun instance
+            
             // Mencari atau membuat entri keranjang untuk pengguna
             $keranjang = Keranjang::firstOrCreate(
-                ['id_suplemen' => null],
+                [
+                    'user_id' => $user->id,
+                    'id_suplemen' => null
+                ],
                 [
                     'membership' => $request->membership,
                     'harga_membership' => $request->harga_membership,
@@ -103,14 +181,17 @@ class MemberController extends Controller
                 'harga_kontrak' => 0,
                 'harga_membership' => $request->harga_membership,
                 'metode_pembayaran' => $request->metode_pembayaran ?? 'pending',
-                'user_id' => $user->idUser
+                'user_id' => $user->id
             ]);
 
+            // Menghitung tanggal mulai dan akhir membership
+            $start_date = $this->calculateMembershipStartDate($akun);
+            $end_date = $this->calculateMembershipEndDate($start_date, $request->membership);
+
             // Memperbarui tanggal membership pengguna
-            $akun = Akun::where('idUser', $user->idUser)->first();
             $akun->update([
-                'membership_start' => Carbon::now(),
-                'membership_end' => $this->calculateMembershipEndDate($request->membership)
+                'membership_start' => $start_date,
+                'membership_end' => $end_date
             ]);
 
             return redirect()->route('member.transaksi')->with('success', 'Membership berhasil ditambahkan ke keranjang');
@@ -133,19 +214,33 @@ class MemberController extends Controller
         return 'expired';
     }
 
-    private function calculateMembershipEndDate($membership)
+    private function calculateMembershipStartDate(Akun $akun)
     {
         $now = Carbon::now();
+        $status = $this->checkMembershipStatus($akun);
+
+        // Jika membership masih aktif, mulai dari tanggal berakhir saat ini
+        if ($status === 'aktif' && $akun->membership_end) {
+            return Carbon::parse($akun->membership_end)->addDay();
+        }
+
+        // Jika tidak aktif atau kedaluwarsa, mulai dari sekarang
+        return $now;
+    }
+
+    private function calculateMembershipEndDate($start_date, $membership)
+    {
+        $start = Carbon::parse($start_date);
 
         switch ($membership) {
             case 'bulanan':
-                return $now->addMonth();
+                return $start->copy()->addMonth();
             case 'per3bulan':
-                return $now->addMonths(3);
+                return $start->copy()->addMonths(3);
             case 'tahunan':
-                return $now->addYear();
+                return $start->copy()->addYear();
             default:
-                return $now->addMonth();
+                return $start->copy()->addMonth();
         }
     }
 }
