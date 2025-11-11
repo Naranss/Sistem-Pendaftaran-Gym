@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BayarController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CatatTransaksiController;
 use App\Http\Controllers\KelolaAkunController;
 use App\Http\Controllers\KelolaAlatGymController;
@@ -45,10 +47,6 @@ Route::post('/lang', function (\Illuminate\Http\Request $request) {
     return redirect()->back();
 })->name('lang.switch.post');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
 // Auth Routes
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -58,6 +56,23 @@ Route::group(['middleware' => 'guest'], function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Cart Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+});
+
+// Profile Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('pages.dashboard');
+    })->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 // Guest Routes
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
@@ -75,6 +90,7 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
     Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
+    Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
     Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
 });

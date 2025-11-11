@@ -33,7 +33,9 @@
     <header class="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-700">
         <!-- Kiri: Logo -->
         <div class="flex items-center gap-3">
-            <img src="{{ asset('assets/logo/logo_white.png') }}" alt="YAPPFIT GYM" class="w-16 h-16">
+            <a href="{{ route('homepage') }}" class="hover:opacity-80 transition-opacity">
+                <img src="{{ asset('assets/logo/logo_white.png') }}" alt="YAPPFIT GYM" class="w-16 h-16">
+            </a>
         </div>
 
         <!-- Tengah kosong -->
@@ -61,13 +63,23 @@
             </div>
 
             <!-- Cart Icon -->
-            <a href="#" class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-300 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 01-8 0"></path>
-                </svg>
-            </a>
+            @auth
+                <a href="{{ route('cart.index') }}" class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-300 hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 01-8 0"></path>
+                    </svg>
+                    @php
+                        $cartCount = \App\Models\Keranjang::where('user_id', Auth::id())->count();
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
+                </a>
+            @endauth
 
             <!-- Auth Links -->
             @guest
@@ -90,7 +102,7 @@
 
                     <!-- Dropdown Menu -->
                     <div x-show="open" @click.outside="open = false"
-                        class="absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50"
+                        class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50"
                         x-transition:enter="transition ease-out duration-100"
                         x-transition:enter-start="opacity-0 scale-95"
                         x-transition:enter-end="opacity-100 scale-100"
@@ -98,14 +110,22 @@
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95">
                         
-                        <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-t-lg">
-                            Dashboard
+                        <!-- Dashboard Link -->
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-t-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span>{{ __('Dashboard') }}</span>
                         </a>
 
-                        <form method="POST" action="{{ route('logout') }}">
+                        <!-- Logout Button -->
+                        <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-700">
                             @csrf
-                            <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-b-lg">
-                                {{ __('Logout') }}
+                            <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-gray-700 rounded-b-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                <span>{{ __('Log Out') }}</span>
                             </button>
                         </form>
                     </div>
