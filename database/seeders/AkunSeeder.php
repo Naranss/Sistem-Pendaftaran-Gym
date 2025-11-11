@@ -32,6 +32,54 @@ class AkunSeeder extends Seeder
             'updated_at' => $now->toDateTimeString(),
         ];
 
+        $rows[] = [
+            'nama' => 'COKI',
+            'email' => 'coki@gmail.com',
+            'password' => Hash::make('admin234'),
+            'no_telp' => '081200000001',
+            'jenis_kelamin' => 'LAKI-LAKI',
+            'role' => 'ADMIN',
+            'membership_end' => null,
+            'created_at' => $now->toDateTimeString(),
+            'updated_at' => $now->toDateTimeString(),
+        ];
+
+        $rows[] = [
+            'nama' => 'KRESNO',
+            'email' => 'kresno@gmail.com',
+            'password' => Hash::make('admin345'),
+            'no_telp' => '081200000002',
+            'jenis_kelamin' => 'LAKI-LAKI',
+            'role' => 'ADMIN',
+            'membership_end' => null,
+            'created_at' => $now->toDateTimeString(),
+            'updated_at' => $now->toDateTimeString(),
+        ];
+
+        $rows[] = [
+            'nama' => 'ROCKY',
+            'email' => 'rocky@gmail.com',
+            'password' => Hash::make('admin456'),
+            'no_telp' => '081200000003',
+            'jenis_kelamin' => 'LAKI-LAKI',
+            'role' => 'ADMIN',
+            'membership_end' => null,
+            'created_at' => $now->toDateTimeString(),
+            'updated_at' => $now->toDateTimeString(),
+        ];
+
+        $rows[] = [
+            'nama' => 'SISKO',
+            'email' => 'sisko@gmail.com',
+            'password' => Hash::make('admin567'),
+            'no_telp' => '081200000004',
+            'jenis_kelamin' => 'LAKI-LAKI',
+            'role' => 'ADMIN',
+            'membership_end' => null,
+            'created_at' => $now->toDateTimeString(),
+            'updated_at' => $now->toDateTimeString(),
+        ];
+
         // Trainer
         $rows[] = [
             'nama' => 'COKI',
