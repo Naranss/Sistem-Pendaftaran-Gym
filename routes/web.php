@@ -98,8 +98,17 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
 // Admin Routes
 Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/suplemen', [KelolaSuplemenController::class, 'index'])->name('suplemen');
+    Route::post('/suplemen', [KelolaSuplemenController::class, 'store'])->name('suplemen.store');
+    Route::put('/suplemen/{id}', [KelolaSuplemenController::class, 'update'])->name('suplemen.update');
+    Route::delete('/suplemen/{id}', [KelolaSuplemenController::class, 'destroy'])->name('suplemen.destroy');
     Route::get('/alat-gym', [KelolaAlatGymController::class, 'index'])->name('alat-gym');
+    Route::post('/alat-gym', [KelolaAlatGymController::class, 'store'])->name('alat-gym.store');
+    Route::put('/alat-gym/{id}', [KelolaAlatGymController::class, 'update'])->name('alat-gym.update');
+    Route::delete('/alat-gym/{id}', [KelolaAlatGymController::class, 'destroy'])->name('alat-gym.destroy');
     Route::get('/akun', [KelolaAkunController::class, 'index'])->name('akun');
+    Route::post('/akun', [KelolaAkunController::class, 'store'])->name('akun.store');
+    Route::put('/akun/{id}', [KelolaAkunController::class, 'update'])->name('akun.update');
+    Route::delete('/akun/{id}', [KelolaAkunController::class, 'destroy'])->name('akun.destroy');
     Route::get('/transaksi', [CatatTransaksiController::class, 'index'])->name('transaksi');
 });
 
