@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
     Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
-    Route::get('/jadwal', [PerbaruiJadwalController::class, 'dataJadwalDanClient'])->name('jadwal');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
