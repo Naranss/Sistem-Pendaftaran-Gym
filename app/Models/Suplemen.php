@@ -36,4 +36,9 @@ class Suplemen extends Model
         }
         return $query;
     }
+
+    public function gambarSuplemen()
+    {
+        return $this->hasMany(GambarSuplemen::class);
+    }
 }

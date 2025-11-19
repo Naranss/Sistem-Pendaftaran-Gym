@@ -84,7 +84,7 @@
                     </svg>
                     <h3 class="text-xl font-medium text-white mb-2">{{ __('Your cart is empty') }}</h3>
                     <p class="text-gray-400 mb-6">{{ __('Add some items to your cart to proceed with checkout') }}</p>
-                    <a href="{{ route('homepage') }}" 
+                    <a href="{{ route('suplemen') }}" 
                        class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
                         {{ __('Start Shopping') }}
                     </a>

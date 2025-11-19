@@ -85,7 +85,7 @@
 
         {{-- ================= MEMBER ================= --}}
         @elseif(Auth::user() && Auth::user()->hasRole('MEMBER'))
-            <x-category label="{{ __('Supplements') }}" route="{{ route('member.suplemen') }}">
+            <x-category label="{{ __('Supplements') }}" route="{{ route('suplemen') }}">
                 <x-slot name="icon">
                     <img 
                     src="{{ asset('assets/icons/Suplemen.svg') }}" 
@@ -132,7 +132,7 @@
 
             {{-- ================= GUEST ================= --}}
             @else
-                <x-category label="{{ __('Supplements') }}" route="{{ route('guest.suplemen') }}">
+                <x-category label="{{ __('Supplements') }}" route="{{ route('suplemen') }}">
                 <x-slot name="icon">
                     <img 
                     src="{{ asset('assets/icons/Suplemen.svg') }}" 
