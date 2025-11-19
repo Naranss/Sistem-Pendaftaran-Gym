@@ -17,10 +17,12 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
 
-// Guest Routes
 Route::get('/', function () {
     return view('pages.homepage');
 })->name('homepage');
+
+Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
+Route::get('/suplemen/{supplement}', [SuplemenController::class, 'show'])->name('suplemen.show');
 
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
@@ -76,7 +78,6 @@ Route::middleware('auth')->group(function () {
 
 // Guest Routes
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
-    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
     Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
@@ -86,7 +87,6 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], 
 
 // Member Routes
 Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
     Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');

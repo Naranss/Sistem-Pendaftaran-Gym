@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('keranjang', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_akun')->constrained('akun')->onDelete('restrict');
             $table->foreignId('id_suplemen')->nullable()->constrained('suplemen')->onDelete('restrict');
             $table->string('membership')->nullable();
             $table->integer('harga_membership')->nullable();
