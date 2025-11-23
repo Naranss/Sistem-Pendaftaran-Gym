@@ -18,7 +18,11 @@ class CartController extends Controller
             ->get();
 
         $total = $cartItems->sum(function ($item) {
-            return ($item->jumlah_produk ?? 0) * ($item->suplemen->harga ?? ($item->harga_produk ?? 0));
+            // Handle case where suplemen might be null
+            if ($item->suplemen) {
+                return ($item->jumlah_produk ?? 0) * ($item->suplemen->harga ?? ($item->harga_produk ?? 0));
+            }
+            return 0;
         });
 
         return view('pages.cart', compact('cartItems', 'total'));
