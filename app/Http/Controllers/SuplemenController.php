@@ -9,16 +9,22 @@ use Illuminate\Support\Facades\Auth;
 
 class SuplemenController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $supplements = Suplemen::with('gambarSuplemen')->filter(request(['search']))->paginate(6);
+        $query = Suplemen::with('gambarSuplemen');
+        
+        if ($request->has('search') && $request->search) {
+            $query->where('nama_suplemen', 'like', '%' . $request->search . '%');
+        }
+        
+        $supplements = $query->orderBy('created_at', 'desc')->paginate(12);
 
         return view('pages.suplemen', compact('supplements'));
     }
 
     public function show($id_suplemen)
     {
-        $suplemen = Suplemen::with('gambarSuplemen')->find($id_suplemen);
+        $suplemen = Suplemen::with('gambarSuplemen')->findOrFail($id_suplemen);
         return view('pages.detail_suplemen', compact('suplemen'));
     }
 
@@ -33,7 +39,7 @@ class SuplemenController extends Controller
         $userId = Auth::id();
 
         // Try to find existing cart item for this user + supplement
-        $existing = Keranjang::where('id_akun', $userId)
+        $existing = Keranjang::where('user_id', $userId)
             ->where('id_suplemen', $request->id_suplemen)
             ->first();
 
@@ -46,7 +52,7 @@ class SuplemenController extends Controller
             $existing->save();
         } else {
             Keranjang::create([
-                'id_akun' => $userId,
+                'user_id' => $userId,
                 'id_suplemen' => $request->id_suplemen,
                 'jumlah_produk' => $request->jumlah_produk,
                 'harga_produk' => $request->input('harga_produk') ?? null,

@@ -104,7 +104,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     {{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y H:i') }}
-                                </td>
+                        </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @php
                                         $tanggalKadaluarsa = \Carbon\Carbon::parse($item->tanggal_kadaluarsa);
@@ -114,8 +114,8 @@
                                     <span class="px-2 py-1 rounded {{ $isExpired ? 'bg-red-900 text-red-300' : ($isNearExpired ? 'bg-yellow-900 text-yellow-300' : 'bg-green-900 text-green-300') }}">
                                         {{ $tanggalKadaluarsa->format('d/m/Y') }}
                                     </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center gap-3">
                                         <button 
                                             onclick="openEditModal({{ $item->id }}, '{{ addslashes($item->nama_suplemen) }}', {{ $item->harga }}, {{ $item->stok }}, '{{ addslashes($item->deskripsi_suplemen ?? '') }}', '{{ \Carbon\Carbon::parse($item->tanggal_kadaluarsa)->format('Y-m-d') }}')"

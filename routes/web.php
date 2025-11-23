@@ -23,6 +23,7 @@ Route::get('/', function () {
 
 Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
 Route::get('/suplemen/{supplement}', [SuplemenController::class, 'show'])->name('suplemen.show');
+Route::post('/suplemen/add-to-cart', [SuplemenController::class, 'addToCart'])->name('suplemen.addToCart')->middleware('auth');
 
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
@@ -35,9 +36,9 @@ Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 
     Route::get('/price', function () {
         return view('pages.guest.price');
     })->name('price');
-    Route::get('/about', function () {
-        return view('pages.guest.about');
-    })->name('about');
+    Route::get('/transaction', function () {
+        return view('pages.guest.riwayat_transaksi');
+    })->name('transaction');
 });
 
 // Language Switch
@@ -79,6 +80,8 @@ Route::middleware('auth')->group(function () {
 // Guest Routes
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
     Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer/{trainer}/contract', [TrainerController::class, 'showContract'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract/store', [TrainerController::class, 'storeContract'])->name('trainer.contract.store');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
