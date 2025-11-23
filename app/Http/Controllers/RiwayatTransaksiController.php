@@ -8,18 +8,23 @@ use Illuminate\Support\Facades\Auth;
 
 class RiwayatTransaksiController extends Controller
 {
-    public function daftarTransaksiPengguna(){
-        if (Auth::user()->role != 'USER') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
-        }
-        $transaksi = Transaksi::all();
+    public function daftarTransaksiPengguna()
+    {
+        $userId = Auth::id();
+        
+        // Get user transactions, ordered by newest first
+        $transaksi = Transaksi::where('user_id', $userId)
+            ->with(['user', 'kontrak', 'kontrak.trainer'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        return view('riwayat_transaksi', compact('transaksi'));
-
+        return view('pages.guest.riwayat_transaksi', compact('transaksi'));
     }
-    public function cetakBuktiPembayaran(){
+
+    public function cetakBuktiPembayaran()
+    {
         if (Auth::user()->role != 'USER') {
-            return redirect()->route('home')->with('error', 'Unauthorized');
+            return redirect()->route('homepage')->with('error', 'Unauthorized');
         }
         $transaksi = Transaksi::all();
         
