@@ -94,8 +94,8 @@ class CartController extends Controller
      */
     public function checkout()
     {
-        // For now, clear the cart and redirect with a success message
-    Keranjang::where('user_id', Auth::id())->delete();
+        // Clear the cart and redirect with a success message
+        Keranjang::where('user_id', Auth::id())->delete();
         return redirect()->route('homepage')->with('success', __('Thank you for your purchase!'));
     }
 }
