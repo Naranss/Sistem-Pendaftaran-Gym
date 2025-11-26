@@ -23,6 +23,22 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="bg-gradient-to-r from-red-900/30 to-red-900/10 border border-red-500/40 rounded-xl p-4 mb-8">
+                <div class="flex gap-3 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-red-300 font-semibold">{{ __('Please fix the errors below:') }}</span>
+                </div>
+                <ul class="space-y-1 ml-8">
+                    @foreach ($errors->all() as $error)
+                        <li class="text-red-300 text-sm">{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Profile Card -->
             <div class="lg:col-span-1">
@@ -30,7 +46,8 @@
                     <div class="text-center">
                         <!-- Profile Photo -->
                         <div class="relative mx-auto mb-6 w-fit">
-                            <img src="{{ Auth::user()->profile_photo_url ?? asset('assets/images/default.png') }}" 
+                            <img id="photoPreview" 
+                                 src="{{ Auth::user()->profile_photo_url ?? asset('assets/images/default.png') }}" 
                                  alt="{{ Auth::user()->nama ?? Auth::user()->email }}" 
                                  class="w-32 h-32 rounded-full object-cover border-4 border-red-600 shadow-lg">
                             <label for="photo" class="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 rounded-full p-3 cursor-pointer transition shadow-lg">
@@ -211,3 +228,72 @@
 </main>
 
 <x-footer class="bg-gray-900 border-t border-gray-800" />
+
+<script>
+    // Handle photo upload and preview
+    document.getElementById('photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (2MB max)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('{{ __("File size must be less than 2MB") }}');
+                e.target.value = '';
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('{{ __("Please select an image file") }}');
+                e.target.value = '';
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('photoPreview').src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Create FormData with only the photo
+            const formData = new FormData();
+            formData.append('photo', file);
+            formData.append('_token', document.querySelector('input[name="_token"]').value);
+            formData.append('_method', 'PUT');
+
+            // Show loading state
+            const photoInput = e.target;
+            photoInput.disabled = true;
+
+            // Submit photo upload via AJAX
+            fetch('{{ route("profile.update") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                photoInput.disabled = false;
+                
+                if (data.success) {
+                    console.log('Photo uploaded successfully');
+                    // Show success message at top
+                    location.reload();
+                } else {
+                    console.error('Upload failed:', data);
+                    alert(data.message || '{{ __("Failed to upload photo") }}');
+                    e.target.value = '';
+                }
+            })
+            .catch(error => {
+                photoInput.disabled = false;
+                console.error('Error:', error);
+                alert('{{ __("Error uploading photo. Please try again.") }}');
+                e.target.value = ''; // Clear the file input
+            });
+        }
+    });
+</script>

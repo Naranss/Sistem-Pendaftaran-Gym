@@ -25,40 +25,57 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
+        $isPhotoOnly = $request->hasFile('photo') && !$request->filled('name');
 
-        $request->validate([
+        // Photo-only upload path (from AJAX)
+        if ($isPhotoOnly) {
+            // Validate ONLY photo - skip all other validations
+            $validated = $request->validate([
+                'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            ]);
+
+            // Handle photo upload
+            try {
+                // Delete old photo if exists
+                if ($user->profile_photo_path) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
+
+                // Store new photo
+                $path = $request->file('photo')->store('profile-photos', 'public');
+                $user->profile_photo_path = $path;
+                $user->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => __('Photo uploaded successfully!')
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('Failed to upload photo. Please try again.')
+                ], 400);
+            }
+        }
+
+        // Full profile update path (from form submit)
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
-                'string',
                 'email',
-                'max:255',
-                Rule::unique('users')->ignore($user->id),
+                Rule::unique('akun', 'email')->ignore($user->id),
             ],
             'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string', 'max:500'],
-            'photo' => ['nullable', 'image', 'max:2048'], // Max 2MB
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'current_password' => ['nullable', 'required_with:password'],
             'password' => ['nullable', 'min:8', 'confirmed'],
         ]);
 
         // Update basic information
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->address = $request->address;
-
-        // Handle profile photo upload
-        if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->profile_photo_path) {
-                Storage::delete($user->profile_photo_path);
-            }
-
-            // Store new photo
-            $path = $request->file('photo')->store('profile-photos', 'public');
-            $user->profile_photo_path = $path;
-        }
+        $user->nama = $validated['name'];
+        $user->email = $validated['email'];
+        $user->no_telp = $validated['phone'];
 
         // Handle password update
         if ($request->filled('current_password')) {
@@ -71,8 +88,26 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password);
         }
 
+        // Handle photo upload in full update
+        if ($request->hasFile('photo')) {
+            try {
+                // Delete old photo if exists
+                if ($user->profile_photo_path) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
+
+                // Store new photo
+                $path = $request->file('photo')->store('profile-photos', 'public');
+                $user->profile_photo_path = $path;
+            } catch (\Exception $e) {
+                return back()
+                    ->withErrors(['photo' => __('Failed to upload photo. Please try again.')])
+                    ->withInput();
+            }
+        }
+
         $user->save();
 
-        return back()->with('status', 'profile-updated');
+        return back()->with('success', __('Profile updated successfully!'));
     }
 }

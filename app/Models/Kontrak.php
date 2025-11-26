@@ -30,6 +30,13 @@ class Kontrak extends Model
     //             $builder->where('idClient', Auth::user()->idUser);
     //         });
     //     }
+    // Otomatisasi Menambahkan kontak ketika kontrak terbuat
+    // static::created(function ($kontrak) {
+    //     \App\Models\ChatRoom::firstOrCreate([
+    //         'trainer_id' => $kontrak->id_trainer,
+    //         'member_id' => $kontrak->id_client,
+    //     ]);
+    // });
     // }
 
 

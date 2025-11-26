@@ -16,6 +16,7 @@ use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     return view('pages.homepage');
@@ -67,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.send');
 });
 
 // Profile Routes
@@ -90,7 +94,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], 
 
 // Member Routes
 Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
+    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
@@ -101,6 +105,7 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
 // Admin Routes
 Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/suplemen', [KelolaSuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/suplemen/{id}', [KelolaSuplemenController::class, 'show'])->name('suplemen.show');
     Route::post('/suplemen', [KelolaSuplemenController::class, 'store'])->name('suplemen.store');
     Route::put('/suplemen/{id}', [KelolaSuplemenController::class, 'update'])->name('suplemen.update');
     Route::delete('/suplemen/{id}', [KelolaSuplemenController::class, 'destroy'])->name('suplemen.destroy');
