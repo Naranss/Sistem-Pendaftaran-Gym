@@ -18,10 +18,16 @@ class CartController extends Controller
             ->get();
 
         $total = $cartItems->sum(function ($item) {
-            // Handle case where suplemen might be null
+            // Handle membership items
+            if ($item->membership && $item->harga_membership) {
+                return ($item->jumlah_produk ?? 1) * $item->harga_membership;
+            }
+            
+            // Handle supplement products
             if ($item->suplemen) {
                 return ($item->jumlah_produk ?? 0) * ($item->suplemen->harga ?? ($item->harga_produk ?? 0));
             }
+            
             return 0;
         });
 

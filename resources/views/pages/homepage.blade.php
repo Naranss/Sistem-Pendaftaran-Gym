@@ -2,29 +2,114 @@
 
 <main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black">
 
-    {{-- ================= Hero Section ================= --}}
-    <section class="relative overflow-hidden bg-cover bg-center h-96" 
-        style="background-image: url('{{ asset("assets/background/background.jpg") }}');">
-        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-
-        <div class="relative container mx-auto px-6 h-full flex items-center justify-center text-center">
-            <div>
-                <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4 tracking-wider">
-                    GYM BY YAPPING CLUB
-                </h1>
-                <p class="text-xl text-gray-300 mb-8">
-                    {{ __('Your Journey to Fitness Starts Here') }}
-                </p>
-
-                @guest
-                    <a href="{{ route('register') }}" 
-                       class="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300">
-                        {{ __('Start Your Journey') }}
-                    </a>
-                @endguest
+    {{-- ================= Hero Carousel Section ================= --}}
+    <section class="relative overflow-hidden h-96 md:h-[500px]" x-data="carousel()">
+        <!-- Carousel Images -->
+        <div class="relative w-full h-full">
+            <!-- Slide 1 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 bg-cover bg-center" 
+                 x-bind:class="currentSlide === 0 ? 'opacity-100' : 'opacity-0'"
+                 style="background-image: url('{{ asset('assets/promotion/promotion1.png') }}');">
             </div>
+
+            <!-- Slide 2 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 bg-cover bg-center" 
+                 x-bind:class="currentSlide === 1 ? 'opacity-100' : 'opacity-0'"
+                 style="background-image: url('{{ asset('assets/promotion/promotion2.png') }}');">
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 bg-cover bg-center" 
+                 x-bind:class="currentSlide === 2 ? 'opacity-100' : 'opacity-0'"
+                 style="background-image: url('{{ asset('assets/promotion/promotion3.png') }}');">
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 bg-cover bg-center" 
+                 x-bind:class="currentSlide === 3 ? 'opacity-100' : 'opacity-0'"
+                 style="background-image: url('{{ asset('assets/promotion/promotion4.png') }}');">
+            </div>
+
+            <!-- Dark Overlay -->
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        </div>
+
+        <!-- Previous Button -->
+        <button @click="prevSlide()" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+
+        <!-- Next Button -->
+        <button @click="nextSlide()" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+        <!-- Dot Indicators -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            <template x-for="(slide, index) in totalSlides" :key="index">
+                <button @click="goToSlide(index)" 
+                        class="w-3 h-3 rounded-full transition duration-300"
+                        x-bind:class="currentSlide === index ? 'bg-white' : 'bg-white/50'">
+                </button>
+            </template>
         </div>
     </section>
+
+    {{-- ================= CTA Button ================= --}}
+    @guest
+    <section class="bg-gray-900 border-b border-gray-700 py-6">
+        <div class="container mx-auto px-6 text-center">
+            <a href="{{ route('register') }}" 
+               class="inline-block bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-lg font-bold transition duration-300 shadow-lg">
+                {{ __('Start Your Journey') }}
+            </a>
+        </div>
+    </section>
+    @endguest
+
+    <script>
+        function carousel() {
+            return {
+                currentSlide: 0,
+                totalSlides: 4,
+                autoSlideInterval: null,
+
+                init() {
+                    this.startAutoSlide();
+                },
+
+                nextSlide() {
+                    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                    this.resetAutoSlide();
+                },
+
+                prevSlide() {
+                    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                    this.resetAutoSlide();
+                },
+
+                goToSlide(index) {
+                    this.currentSlide = index;
+                    this.resetAutoSlide();
+                },
+
+                startAutoSlide() {
+                    this.autoSlideInterval = setInterval(() => {
+                        this.nextSlide();
+                    }, 5000);
+                },
+
+                resetAutoSlide() {
+                    clearInterval(this.autoSlideInterval);
+                    this.startAutoSlide();
+                }
+            }
+        }
+    </script>
 
     {{-- ================= Categories Section ================= --}}
     <section class="container mx-auto px-6 py-12">

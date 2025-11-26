@@ -10,7 +10,7 @@
                 </svg>
                 <h1 class="text-4xl font-bold text-white">{{ __('My Schedule') }}</h1>
             </div>
-            <p class="text-gray-400 text-lg">{{ __('Manage your training contracts and schedules') }}</p>
+            <p class="text-gray-400 text-lg">{{ __('Manage your active training clients and schedules') }}</p>
         </div>
 
         {{-- Active Contracts --}}
@@ -91,8 +91,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
-                    <h3 class="text-2xl font-bold text-white mb-2">{{ __('No Active Contracts') }}</h3>
-                    <p class="text-gray-400 mb-6">{{ __('You currently have no active training contracts') }}</p>
+                    <h3 class="text-2xl font-bold text-white mb-2">{{ __('No Active Clients') }}</h3>
+                <p class="text-gray-400 mb-6">{{ __('You currently have no active training clients') }}</p>
                     <a href="{{ route('homepage') }}" 
                        class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-bold transition duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">

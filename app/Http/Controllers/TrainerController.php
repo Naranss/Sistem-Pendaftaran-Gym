@@ -12,7 +12,23 @@ class TrainerController extends Controller
 {
     public function index()
     {
-        // List all trainers for guest/member to view
+        // Check if user is authenticated and is a member
+        if (Auth::check() && Auth::user()->role === 'MEMBER') {
+            // Check if member already has an active trainer contract
+            $activeContract = Kontrak::where('id_client', Auth::id())
+                ->where('tanggal_berakhir', '>=', now())
+                ->with('trainer')
+                ->first();
+            
+            if ($activeContract) {
+                // Member has a trainer, show their trainer dashboard
+                $trainer = $activeContract->trainer;
+                $contract = $activeContract;
+                return view('pages.member.my_trainer', compact('trainer', 'contract'));
+            }
+        }
+        
+        // Show list of available trainers for new contracts
         $trainers = Akun::where('role', 'TRAINER')->get();
         return view('pages.guest.trainer', compact('trainers'));
     }

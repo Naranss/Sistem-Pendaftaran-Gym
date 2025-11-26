@@ -105,7 +105,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
                                 </svg>
-                                {{ \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($akun->membership_end)) }}
+                                {{ intval(\Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($akun->membership_end))) }}
                             </p>
                             <p class="text-xs text-gray-400 mt-1">{{ __('days') }}</p>
                         </div>
@@ -278,7 +278,7 @@
                             <input type="radio" name="metode_pembayaran" value="e-wallet" class="w-4 h-4 mr-3">
                             <div class="flex-grow">
                                 <span class="text-white font-semibold">{{ __('E-Wallet') }}</span>
-                                <p class="text-xs text-gray-400">{{ __('GCash, PayMaya, etc.') }}</p>
+                                <p class="text-xs text-gray-400">{{ __('QRIS, GoPay, etc.') }}</p>
                             </div>
                         </label>
                     </div>

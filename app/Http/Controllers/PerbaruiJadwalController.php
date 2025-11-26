@@ -82,7 +82,7 @@ class PerbaruiJadwalController extends Controller
             ->where('tanggal_berakhir', '>', now())
             ->get();
 
-        return view('pages.trainer.clients', compact('contracts'));
+        return view('pages.trainer.jadwal', compact('contracts'));
     }
     
     public function edit($contract) {

@@ -1,87 +1,94 @@
 <x-navbar />
 
-<main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black py-8">
-    <div class="container mx-auto px-6">
+<main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <!-- Header Section -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+                <h1 class="text-4xl font-bold text-white">{{ __('Manage Transactions') }}</h1>
+            </div>
+            <p class="text-gray-400 text-lg">{{ __('View all system transactions and payment records') }}</p>
+        </div>
+
         @if(session('success'))
-            <div class="bg-green-500 text-white px-4 py-3 rounded mb-6">
+            <div class="mb-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-300">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-500 text-white px-4 py-3 rounded mb-6">
+            <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
                 {{ session('error') }}
             </div>
         @endif
 
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-white">Kelola Transaksi</h1>
-        </div>
-
         {{-- Search Bar --}}
-        <div class="mb-6">
-            <form method="GET" action="{{ route('admin.transaksi') }}" class="flex gap-4">
+        <div class="mb-8">
+            <form method="GET" action="{{ route('admin.transaksi') }}" class="flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
                     <input 
                         type="text" 
                         name="search" 
                         value="{{ request('search') }}"
-                        placeholder="Cari transaksi (nama akun, email)..." 
-                        class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+                        placeholder="{{ __('Search transactions...') }}" 
+                        class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
                     >
                 </div>
                 <button 
                     type="submit" 
-                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2 whitespace-nowrap"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    Cari
+                    {{ __('Search') }}
                 </button>
                 @if(request('search'))
                     <a 
                         href="{{ route('admin.transaksi') }}" 
-                        class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
+                        class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold transition duration-300 text-center"
                     >
-                        Reset
+                        {{ __('Reset') }}
                     </a>
                 @endif
             </form>
         </div>
 
         {{-- Table --}}
-        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-700">
                     <thead class="bg-gray-700">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                KODE TRANSAKSI
+                                {{ __('Transaction Code') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                NAMA AKUN
+                                {{ __('Account Name') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                NAMA ITEM
+                                {{ __('Item Name') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                JUMLAH
+                                {{ __('Quantity') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                HARGA SATUAN
+                                {{ __('Unit Price') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                TOTAL HARGA
+                                {{ __('Total Price') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                TGL TRANSAKSI
+                                {{ __('Date') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                METODE PEMBAYARAN
+                                {{ __('Payment Method') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                STATUS
+                                {{ __('Status') }}
                             </th>
                         </tr>
                     </thead>
@@ -138,21 +145,21 @@
                                     {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    <span class="px-2 py-1 rounded bg-blue-900 text-blue-300">
+                                    <span class="px-3 py-1 rounded text-xs font-semibold bg-blue-900/30 text-blue-300 border border-blue-500/50">
                                         {{ ucfirst($item->metode_pembayaran ?? 'pending') }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     @php
-                                        $status = $item->status ?? ($item->metode_pembayaran === 'pending' ? 'Pending' : 'Lunas');
+                                        $status = $item->status ?? ($item->metode_pembayaran === 'pending' ? 'Pending' : 'Paid');
                                         $statusClass = match(strtolower($status)) {
-                                            'lunas', 'selesai', 'paid' => 'bg-green-900 text-green-300',
-                                            'pending', 'menunggu' => 'bg-yellow-900 text-yellow-300',
-                                            'gagal', 'failed', 'canceled' => 'bg-red-900 text-red-300',
-                                            default => 'bg-gray-900 text-gray-300'
+                                            'lunas', 'selesai', 'paid' => 'bg-green-900/30 text-green-300 border border-green-500/50',
+                                            'pending', 'menunggu' => 'bg-yellow-900/30 text-yellow-300 border border-yellow-500/50',
+                                            'gagal', 'failed', 'canceled' => 'bg-red-900/30 text-red-300 border border-red-500/50',
+                                            default => 'bg-gray-900/30 text-gray-300 border border-gray-500/50'
                                         };
                                     @endphp
-                                    <span class="px-2 py-1 rounded {{ $statusClass }}">
+                                    <span class="px-3 py-1 rounded text-xs font-semibold {{ $statusClass }}">
                                         {{ ucfirst($status) }}
                                     </span>
                                 </td>
@@ -161,12 +168,12 @@
                             <tr>
                                 <td colspan="9" class="px-6 py-8 text-center text-gray-400">
                                     <div class="flex flex-col items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
                                         </svg>
-                                        <p>Tidak ada data transaksi ditemukan</p>
+                                        <p>{{ __('No transaction data found') }}</p>
                                         @if(request('search'))
-                                            <p class="text-sm mt-1">Coba cari dengan kata kunci lain</p>
+                                            <p class="text-sm mt-1">{{ __('Try searching with different keywords') }}</p>
                                         @endif
                                     </div>
                                 </td>
