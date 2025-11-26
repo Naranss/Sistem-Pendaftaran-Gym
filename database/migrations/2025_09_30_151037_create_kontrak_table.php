@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('kontrak', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_client')->constrained('akun')->onDelete('restrict');
+            $table->foreignId('id_trainer')->constrained('akun')->onDelete('restrict');
+            $table->date('tanggal_berakhir');
             $table->timestamps();
         });
     }
