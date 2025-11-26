@@ -78,6 +78,57 @@
                                 </div>
                             </div>
                         </div>
+                        @elseif($item->membership)
+                            {{-- Membership Item --}}
+                            <div class="bg-gradient-to-b from-blue-800 to-blue-900 rounded-xl shadow-lg border border-blue-700 p-4 hover:border-blue-600/50 transition">
+                                <div class="flex items-start gap-4">
+                                    <!-- Membership Icon -->
+                                    <div class="flex-shrink-0 bg-blue-700/50 rounded-lg p-3 border border-blue-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Membership Info -->
+                                    <div class="flex-grow">
+                                        <h3 class="text-lg font-bold text-white mb-1">
+                                            @if($item->membership === 'bulanan')
+                                                {{ __('Monthly Membership') }}
+                                            @elseif($item->membership === 'per3bulan')
+                                                {{ __('3 Months Membership') }}
+                                            @elseif($item->membership === 'tahunan')
+                                                {{ __('Yearly Membership') }}
+                                            @else
+                                                {{ __('Membership') }}
+                                            @endif
+                                        </h3>
+                                        <p class="text-blue-300 font-semibold text-sm mb-2">{{ __('Premium access to all facilities') }}</p>
+                                        <p class="text-blue-400 font-bold text-lg">Rp {{ number_format($item->harga_membership, 0, ',', '.') }}</p>
+                                    </div>
+
+                                    <!-- Price & Remove -->
+                                    <div class="text-right flex flex-col items-end gap-4">
+                                        <div>
+                                            <p class="text-gray-300 text-sm">{{ __('Subtotal') }}</p>
+                                            <p class="text-2xl font-bold text-white">
+                                                Rp {{ number_format($item->harga_membership * ($item->jumlah_produk ?? 1), 0, ',', '.') }}
+                                            </p>
+                                        </div>
+                                        
+                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="text-red-400 hover:text-red-300 text-sm font-semibold transition flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                                {{ __('Remove') }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         @else
                             <div class="bg-gradient-to-r from-red-900/30 to-red-900/10 border border-red-500/40 rounded-xl p-4">
                                 <div class="flex items-center justify-between">
@@ -176,137 +227,6 @@
                 </a>
             </div>
         @endif
-    </div>
-</main>
-
-<x-footer class="bg-gray-900 border-t border-gray-800" />
-
-@push('scripts')
-<script>
-function updateQuantity(itemId, action) {
-    fetch(`/cart/update/${itemId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ action: action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.reload();
-        }
-    });
-}
-</script>
-@endpush
-
-            @if(count($cartItems) > 0)
-                <div class="space-y-6">
-                    {{-- Cart Items List --}}
-                    <div class="divide-y divide-gray-700">
-                        @foreach($cartItems as $item)
-                            @if($item->suplemen)
-                            <div class="py-6 flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    {{-- Suplemen doesn't have an image column in the migration; use a placeholder --}}
-                                    <img src="{{ asset('assets/images/default.png') }}" 
-                                         alt="{{ $item->suplemen->nama_suplemen }}"
-                                         class="w-20 h-20 object-cover rounded-lg bg-gray-700 p-1">
-                                    
-                                    <div>
-                                        <h3 class="text-lg font-medium text-white">{{ $item->suplemen->nama_suplemen }}</h3>
-                                        <p class="text-sm text-gray-400">{{ __('Price') }}: Rp {{ number_format($item->suplemen->harga, 0, ',', '.') }}</p>
-                                        
-                                        {{-- Quantity Selector --}}
-                                        <div class="flex items-center mt-2">
-                                            <button onclick="updateQuantity('{{ $item->id }}', 'decrease')"
-                                                    class="bg-gray-700 text-white px-2 py-1 rounded-l hover:bg-gray-600 transition">
-                                                -
-                                            </button>
-                                            <span class="bg-gray-700 text-white px-4 py-1">{{ $item->jumlah_produk ?? 1 }}</span>
-                                            <button onclick="updateQuantity('{{ $item->id }}', 'increase')"
-                                                    class="bg-gray-700 text-white px-2 py-1 rounded-r hover:bg-gray-600 transition">
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-right">
-                                    <p class="text-lg font-medium text-white">
-                                        Rp {{ number_format(($item->suplemen->harga ?? $item->harga_produk) * ($item->jumlah_produk ?? 1), 0, ',', '.') }}
-                                    </p>
-                                    
-                                    <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" 
-                                                class="text-red-400 hover:text-red-300 text-sm transition">
-                                            {{ __('Remove') }}
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            @else
-                                <div class="py-6 px-4 bg-gray-700/50 rounded-lg border border-red-500/30">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-white font-medium">{{ __('Product no longer available') }}</p>
-                                            <p class="text-sm text-gray-400">{{ __('This item has been removed from inventory') }}</p>
-                                        </div>
-                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm">
-                                                {{ __('Remove') }}
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-
-                    {{-- Cart Summary --}}
-                    <div class="border-t border-gray-700 pt-6 mt-6">
-                        <div class="flex justify-between items-center text-lg font-medium text-white mb-6">
-                            <span>{{ __('Total') }}</span>
-                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
-                        </div>
-
-                        <div class="flex justify-end space-x-4">
-                            <a href="{{ route('homepage') }}" 
-                               class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">
-                                {{ __('Continue Shopping') }}
-                            </a>
-                            <form action="{{ route('cart.checkout') }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                                    {{ __('Proceed to Checkout') }}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @else
-                {{-- Empty Cart State --}}
-                <div class="text-center py-12">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <h3 class="text-xl font-medium text-white mb-2">{{ __('Your cart is empty') }}</h3>
-                    <p class="text-gray-400 mb-6">{{ __('Add some items to your cart to proceed with checkout') }}</p>
-                    <a href="{{ route('suplemen') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                        {{ __('Start Shopping') }}
-                    </a>
-                </div>
-            @endif
-        </div>
     </div>
 </main>
 

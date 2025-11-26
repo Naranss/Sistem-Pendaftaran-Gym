@@ -1,63 +1,71 @@
 <x-navbar />
 
-<main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black py-8">
-    <div class="container mx-auto px-6">
+<main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <!-- Header Section -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                </svg>
+                <h1 class="text-4xl font-bold text-white">{{ __('Manage Accounts') }}</h1>
+            </div>
+            <p class="text-gray-400 text-lg">{{ __('Manage all user accounts in the system') }}</p>
+        </div>
+
+        <!-- Success/Error Messages -->
         @if(session('success'))
-            <div class="bg-green-500 text-white px-4 py-3 rounded mb-6">
+            <div class="mb-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-300">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-500 text-white px-4 py-3 rounded mb-6">
+            <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
                 {{ session('error') }}
             </div>
         @endif
 
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-white">Kelola Akun</h1>
-            <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Tambah Akun
-            </button>
-        </div>
-
-        {{-- Search Bar --}}
-        <div class="mb-6">
-            <form method="GET" action="{{ route('admin.akun') }}" class="flex gap-4">
+        <!-- Search and Add Button -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+            <form method="GET" action="{{ route('admin.akun') }}" class="flex-1 flex gap-4">
                 <div class="flex-1">
                     <input 
                         type="text" 
                         name="search" 
                         value="{{ request('search') }}"
-                        placeholder="Cari akun (nama, email, nomor HP)..." 
-                        class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+                        placeholder="{{ __('Search accounts...') }}" 
+                        class="w-full px-4 py-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-red-600 transition"
                     >
                 </div>
                 <button 
                     type="submit" 
-                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 flex items-center gap-2"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center gap-2 whitespace-nowrap"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    Cari
+                    {{ __('Search') }}
                 </button>
                 @if(request('search'))
                     <a 
                         href="{{ route('admin.akun') }}" 
-                        class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300"
+                        class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold transition duration-300"
                     >
-                        Reset
+                        {{ __('Reset') }}
                     </a>
                 @endif
             </form>
+            <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2 whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                {{ __('Add Account') }}
+            </button>
         </div>
 
-        {{-- Table --}}
-        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <!-- Table -->
+        <div class="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-700">
                     <thead class="bg-gray-700">

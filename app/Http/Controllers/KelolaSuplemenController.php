@@ -21,6 +21,12 @@ class KelolaSuplemenController extends Controller
         return view('pages.admin.kel_suplemen', compact('suplemen'));
     }
 
+    public function show($id)
+    {
+        $suplemen = Suplemen::findOrFail($id);
+        return view('pages.admin.kel_suplemen_detail', compact('suplemen'));
+    }
+
     public function store(Request $request)
     {
         if (Auth::user()->role != 'ADMIN') {

@@ -90,7 +90,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], 
 
 // Member Routes
 Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'jadwal'])->name('trainer');
+    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
@@ -101,6 +101,7 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
 // Admin Routes
 Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/suplemen', [KelolaSuplemenController::class, 'index'])->name('suplemen');
+    Route::get('/suplemen/{id}', [KelolaSuplemenController::class, 'show'])->name('suplemen.show');
     Route::post('/suplemen', [KelolaSuplemenController::class, 'store'])->name('suplemen.store');
     Route::put('/suplemen/{id}', [KelolaSuplemenController::class, 'update'])->name('suplemen.update');
     Route::delete('/suplemen/{id}', [KelolaSuplemenController::class, 'destroy'])->name('suplemen.destroy');

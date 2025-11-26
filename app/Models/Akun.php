@@ -18,7 +18,8 @@ class Akun extends Authenticatable
         "jenis_kelamin",
         "role",
         "membership_start",
-        "membership_end"
+        "membership_end",
+        "profile_photo_path"
     ];
 
     protected $casts = [
@@ -31,5 +32,15 @@ class Akun extends Authenticatable
     public function hasRole($role)
     {
         return $this->role === $role;
+    }
+
+    /**
+     * Get the user's profile photo URL.
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path 
+            ? asset('storage/' . $this->profile_photo_path)
+            : asset('assets/images/default.png');
     }
 }
