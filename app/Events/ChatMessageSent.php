@@ -32,10 +32,10 @@ class ChatMessageSent implements ShouldBroadcastNow
         return [
             'id' => $this->message->id,
             'chat_room_id' => $this->message->chat_room_id,
-            'sender_id' => $this->message->sender_id,
+            'sender_id' => (string)$this->message->sender_id,
             'sender_name' => $this->message->sender->nama,
             'message' => $this->message->message,
-            'created_at' => $this->message->created_at->toDateTimeString(),
+            'created_at' => $this->message->created_at->format('H:i d-m-Y H:i'),
         ];
     }
 }
