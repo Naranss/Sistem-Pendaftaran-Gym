@@ -39,8 +39,10 @@ class Akun extends Authenticatable
      */
     public function getProfilePhotoUrlAttribute()
     {
-        return $this->profile_photo_path 
-            ? asset('storage/' . $this->profile_photo_path)
-            : asset('assets/images/default.png');
+        if ($this->profile_photo_path) {
+            return asset($this->profile_photo_path);
+        }
+
+        return asset('assets/profilPhoto/default.png');
     }
 }
