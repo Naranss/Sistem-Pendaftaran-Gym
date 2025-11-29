@@ -23,13 +23,8 @@ class PerbaruiJadwalController extends Controller
 
         // Check for active contracts related to the current user.
         // We treat 'active' as having a `durasiKontrak` in the future.
-        $contractsQuery = Kontrak::query();
+        $contractsQuery = Kontrak::query()->where('id_client', $user->id);
 
-        if ($user->role === 'member') {
-            $contractsQuery->where('idClient', $user->id);
-        } elseif ($user->role === 'trainer') {
-            $contractsQuery->where('idTrainer', $user->id);
-        }
 
         // Only consider contracts that are still active (durasiKontrak > now)
         $contracts = $contractsQuery->where('tanggal_berakhir', '>', now())->get();
@@ -59,7 +54,6 @@ class PerbaruiJadwalController extends Controller
                                     'tabel_jadwal' => $tabelValue,
                                     'minggu_ke' => $minggu,
                                     'hari' => $hari,
-                                    'jenis_workout' => 'Belum Ditentukan'
                                 ]);
 
                                 $newEntries->push($entry);
@@ -114,7 +108,6 @@ class PerbaruiJadwalController extends Controller
                         'tabel_jadwal' => $tabelValue,
                         'minggu_ke' => $minggu,
                         'hari' => $hari,
-                        'jenis_workout' => 'Belum Ditentukan'
                     ]);
                     $created->push($entry);
                 }

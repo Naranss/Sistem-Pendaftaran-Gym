@@ -13,7 +13,7 @@ class CartController extends Controller
      */
     public function index()
     {
-        $cartItems = Keranjang::where('user_id', Auth::id())
+        $cartItems = Keranjang::where('id_akun', Auth::id())
             ->with('suplemen')
             ->get();
 
@@ -30,7 +30,6 @@ class CartController extends Controller
             
             return 0;
         });
-
         return view('pages.cart', compact('cartItems', 'total'));
     }
 
@@ -44,20 +43,24 @@ class CartController extends Controller
             'jumlah_produk' => 'required|integer|min:1'
         ]);
 
-        $existing = Keranjang::where('user_id', Auth::id())
+        // normalize to use `id_akun` column (migration and model use id_akun)
+        $existing = Keranjang::where('id_akun', Auth::id())
             ->where('id_suplemen', $request->id_suplemen)
             ->first();
 
         if ($existing) {
-            $existing->jumlah_produk += $request->jumlah_produk;
-            $existing->harga_produk = $request->harga_produk ?? $existing->harga_produk;
+            $existing->jumlah_produk = ($existing->jumlah_produk ?? 0) + $request->jumlah_produk;
+            // harga_produk column not present in migration; keep existing harga_produk if exists
+            if ($request->has('harga_produk')) {
+                $existing->harga_produk = $request->harga_produk;
+            }
             $existing->save();
         } else {
             Keranjang::create([
-                'user_id' => Auth::id(),
+                'id_akun' => Auth::id(),
                 'id_suplemen' => $request->id_suplemen,
                 'jumlah_produk' => $request->jumlah_produk,
-                'harga_produk' => $request->harga_produk ?? null
+                'harga_produk' => $request->get('harga_produk') ?? null
             ]);
         }
 
@@ -69,7 +72,8 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $cartItem = Keranjang::where('user_id', Auth::id())
+        // ensure we only find items belonging to the current user (column: id_akun)
+        $cartItem = Keranjang::where('id_akun', Auth::id())
             ->findOrFail($id);
 
         if ($request->action === 'increase') {
@@ -88,7 +92,7 @@ class CartController extends Controller
      */
     public function remove($id)
     {
-        Keranjang::where('user_id', Auth::id())
+        Keranjang::where('id_akun', Auth::id())
             ->findOrFail($id)
             ->delete();
 
@@ -101,7 +105,7 @@ class CartController extends Controller
     public function checkout()
     {
         // Clear the cart and redirect with a success message
-        Keranjang::where('user_id', Auth::id())->delete();
+        Keranjang::where('id_akun', Auth::id())->delete();
         return redirect()->route('homepage')->with('success', __('Thank you for your purchase!'));
     }
 }
