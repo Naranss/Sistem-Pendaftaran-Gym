@@ -52,7 +52,7 @@ class SuplemenController extends Controller
             $existing->save();
         } else {
             Keranjang::create([
-                'user_id' => $userId,
+                'id_akun' => $userId,
                 'id_suplemen' => $request->id_suplemen,
                 'jumlah_produk' => $request->jumlah_produk,
                 'harga_produk' => $request->input('harga_produk') ?? null,
