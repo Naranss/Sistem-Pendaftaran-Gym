@@ -16,6 +16,7 @@ use App\Http\Controllers\RiwayatTransaksiController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     return view('pages.homepage');
@@ -67,6 +68,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.send');
 });
 
 // Profile Routes
