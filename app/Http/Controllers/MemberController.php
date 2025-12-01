@@ -6,6 +6,7 @@ use App\Models\Akun;
 use App\Models\Keranjang;
 use App\Models\Transaksi;
 use App\Models\JadwalWorkout;
+use App\Models\Suplemen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -14,7 +15,8 @@ class MemberController extends Controller
 {
     public function suplemen()
     {
-        return view('member.suplemen');
+        $supplements = Suplemen::with('gambarSuplemen')->paginate(12);
+        return view('member.suplemen', compact('supplements'));
     }
 
     public function trainer()
@@ -53,7 +55,7 @@ class MemberController extends Controller
 
         try {
             $akun = $user; // Auth::user() already returns Akun instance
-            
+
             if (!$akun) {
                 return redirect()->back()->with('error', 'Akun tidak ditemukan');
             }
@@ -147,7 +149,7 @@ class MemberController extends Controller
 
         try {
             $akun = $user; // Auth::user() already returns Akun instance
-            
+
             // Mencari atau membuat entri keranjang untuk pengguna
             $keranjang = Keranjang::firstOrCreate(
                 [
