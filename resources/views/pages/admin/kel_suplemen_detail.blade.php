@@ -36,6 +36,20 @@
                     <div>
                         <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Product Name') }}</p>
                         <p class="text-3xl font-bold text-white mt-2">{{ $suplemen->nama_suplemen }}</p>
+                        <!-- Product Images -->
+                        <div class="mt-6 flex flex-wrap gap-4">
+                            @if($suplemen->gambarSuplemen->count())
+                            @foreach($suplemen->gambarSuplemen as $img)
+                            <img
+                                src="{{ asset($img->path) }}"
+                                alt="{{ $img->img_alt }}"
+                                class="w-32 h-32 object-cover rounded-lg border border-gray-700">
+                            @endforeach
+                            @else
+                            <p class="text-gray-500 italic">{{ __('No product image available') }}</p>
+                            @endif
+                        </div>
+
                     </div>
                 </div>
 
@@ -46,9 +60,9 @@
                     <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Description') }}</p>
                     <p class="text-gray-300 mt-3 leading-relaxed">
                         @if($suplemen->deskripsi_suplemen)
-                            {{ $suplemen->deskripsi_suplemen }}
+                        {{ $suplemen->deskripsi_suplemen }}
                         @else
-                            <span class="text-gray-500 italic">{{ __('No description provided') }}</span>
+                        <span class="text-gray-500 italic">{{ __('No description provided') }}</span>
                         @endif
                     </p>
                 </div>
@@ -67,18 +81,18 @@
                     <div class="bg-gray-700/50 rounded-lg p-6 border border-gray-600">
                         <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Current Stock') }}</p>
                         @php
-                            $stockClass = $suplemen->stok > 10 ? 'text-green-400' : ($suplemen->stok > 0 ? 'text-yellow-400' : 'text-red-400');
-                            $stockBgClass = $suplemen->stok > 10 ? 'bg-green-900/30' : ($suplemen->stok > 0 ? 'bg-yellow-900/30' : 'bg-red-900/30');
+                        $stockClass = $suplemen->stok > 10 ? 'text-green-400' : ($suplemen->stok > 0 ? 'text-yellow-400' : 'text-red-400');
+                        $stockBgClass = $suplemen->stok > 10 ? 'bg-green-900/30' : ($suplemen->stok > 0 ? 'bg-yellow-900/30' : 'bg-red-900/30');
                         @endphp
                         <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg {{ $stockBgClass }}">
                             <span class="text-2xl font-bold {{ $stockClass }}">{{ $suplemen->stok }}</span>
                             <span class="text-xs {{ $stockClass }} uppercase font-semibold">
                                 @if($suplemen->stok > 10)
-                                    {{ __('Good') }}
+                                {{ __('Good') }}
                                 @elseif($suplemen->stok > 0)
-                                    {{ __('Low') }}
+                                {{ __('Low') }}
                                 @else
-                                    {{ __('Out of Stock') }}
+                                {{ __('Out of Stock') }}
                                 @endif
                             </span>
                         </div>
@@ -88,76 +102,73 @@
                     <div class="bg-gray-700/50 rounded-lg p-6 border border-gray-600">
                         <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Expiry Status') }}</p>
                         @php
-                            $expiryDate = \Carbon\Carbon::parse($suplemen->tanggal_kadaluarsa);
-                            $daysLeft = intval(now()->diffInDays($expiryDate));
-                            $isExpired = $daysLeft < 0;
-                            $expiryClass = $isExpired ? 'text-red-400 bg-red-900/30' : ($daysLeft < 30 ? 'text-yellow-400 bg-yellow-900/30' : 'text-green-400 bg-green-900/30');
-                        @endphp
-                        <div class="mt-3 inline-flex flex-col">
+                        $expiryDate = \Carbon\Carbon::parse($suplemen->tanggal_kadaluarsa);
+                        $daysLeft = intval(now()->diffInDays($expiryDate));
+                        $isExpired = $daysLeft < 0;
+                            $expiryClass=$isExpired ? 'text-red-400 bg-red-900/30' : ($daysLeft < 30 ? 'text-yellow-400 bg-yellow-900/30' : 'text-green-400 bg-green-900/30' );
+                            @endphp
+                            <div class="mt-3 inline-flex flex-col">
                             <span class="text-2xl font-bold {{ $expiryClass }} px-4 py-2 rounded-lg">
                                 {{ $expiryDate->format('d/m/Y') }}
                             </span>
                             <span class="text-xs {{ $expiryClass }} mt-2 px-4 py-1 rounded-lg uppercase font-semibold">
                                 @if($isExpired)
-                                    {{ __('Expired') }} ({{ abs($daysLeft) }} {{ __('days ago') }})
+                                {{ __('Expired') }} ({{ abs($daysLeft) }} {{ __('days ago') }})
                                 @elseif($daysLeft < 30)
                                     {{ __('Expiring Soon') }} ({{ $daysLeft }} {{ __('days left') }})
-                                @else
+                                    @else
                                     {{ __('Fresh') }} ({{ $daysLeft }} {{ __('days left') }})
-                                @endif
-                            </span>
-                        </div>
+                                    @endif
+                                    </span>
                     </div>
-                </div>
-
-                <hr class="border-gray-700 my-8">
-
-                <!-- Additional Information -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <!-- Created Date -->
-                    <div>
-                        <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Created Date') }}</p>
-                        <p class="text-gray-300 mt-2">{{ $suplemen->created_at->format('d/m/Y H:i') }}</p>
-                    </div>
-
-                    <!-- Last Updated -->
-                    <div>
-                        <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Last Updated') }}</p>
-                        <p class="text-gray-300 mt-2">{{ $suplemen->updated_at->format('d/m/Y H:i') }}</p>
-                    </div>
-                </div>
-
-                <hr class="border-gray-700 my-8">
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a 
-                        href="{{ route('admin.suplemen') }}" 
-                        class="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold transition duration-300 text-center"
-                    >
-                        {{ __('Back') }}
-                    </a>
-                    <button 
-                        onclick="editSupplement({{ $suplemen->id }}, '{{ addslashes($suplemen->nama_suplemen) }}', {{ $suplemen->harga }}, {{ $suplemen->stok }}, '{{ addslashes($suplemen->deskripsi_suplemen) }}', '{{ $suplemen->tanggal_kadaluarsa }}')"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        {{ __('Edit') }}
-                    </button>
-                    <button 
-                        onclick="deleteSupplement({{ $suplemen->id }}, '{{ addslashes($suplemen->nama_suplemen) }}')"
-                        class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        {{ __('Delete') }}
-                    </button>
                 </div>
             </div>
+
+            <hr class="border-gray-700 my-8">
+
+            <!-- Additional Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <!-- Created Date -->
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Created Date') }}</p>
+                    <p class="text-gray-300 mt-2">{{ $suplemen->created_at->format('d/m/Y H:i') }}</p>
+                </div>
+
+                <!-- Last Updated -->
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ __('Last Updated') }}</p>
+                    <p class="text-gray-300 mt-2">{{ $suplemen->updated_at->format('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 my-8">
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a
+                    href="{{ route('admin.suplemen') }}"
+                    class="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold transition duration-300 text-center">
+                    {{ __('Back') }}
+                </a>
+                <button
+                    onclick="editSupplement({{ $suplemen->id }}, '{{ addslashes($suplemen->nama_suplemen) }}', {{ $suplemen->harga }}, {{ $suplemen->stok }}, '{{ addslashes($suplemen->deskripsi_suplemen) }}', '{{ $suplemen->tanggal_kadaluarsa }}')"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    {{ __('Edit') }}
+                </button>
+                <button
+                    onclick="deleteSupplement({{ $suplemen->id }}, '{{ addslashes($suplemen->nama_suplemen) }}')"
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition duration-300 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    {{ __('Delete') }}
+                </button>
+            </div>
         </div>
+    </div>
     </div>
 </main>
 
@@ -167,7 +178,12 @@
     function editSupplement(id, nama, harga, stok, deskripsi, tanggalKadaluarsa) {
         // Store data in sessionStorage and redirect to edit
         sessionStorage.setItem('editData', JSON.stringify({
-            id, nama, harga, stok, deskripsi, tanggalKadaluarsa
+            id,
+            nama,
+            harga,
+            stok,
+            deskripsi,
+            tanggalKadaluarsa
         }));
         window.location.href = `{{ route('admin.suplemen') }}#edit-${id}`;
     }
@@ -177,19 +193,19 @@
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = `{{ url('admin/suplemen') }}/${id}`;
-            
+
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
             form.appendChild(csrfToken);
-            
+
             const methodInput = document.createElement('input');
             methodInput.type = 'hidden';
             methodInput.name = '_method';
             methodInput.value = 'DELETE';
             form.appendChild(methodInput);
-            
+
             document.body.appendChild(form);
             form.submit();
         }
