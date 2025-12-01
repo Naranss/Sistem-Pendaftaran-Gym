@@ -13,17 +13,12 @@ class Transaksi extends Model
     protected $table = 'transaksi';
 
     protected $fillable = [
-        'tanggal',
-        'id_produk',
-        'id_kontrak',
-        'membership',
-        'jumlah_produk',
-        'harga_produk',
-        'harga_kontrak',
-        'harga_membership',
-        'metode_pembayaran',
-        'user_id',
+        'order_id',
+        'id_akun',
+        'total',
         'status',
+        'tanggal',
+        'metode_pembayaran'
     ];
 
     # relasi ke tabel keranjang
@@ -42,5 +37,11 @@ class Transaksi extends Model
     public function user()
     {
         return $this->belongsTo(Akun::class, 'user_id');
+    }
+
+    # Relationship to ProdukTransaksi (products in this transaction)
+    public function produkTransaksi()
+    {
+        return $this->hasMany(ProdukTransaksi::class, 'id_transaksi');
     }
 }

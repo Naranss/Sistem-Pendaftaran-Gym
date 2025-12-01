@@ -17,6 +17,7 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('pages.homepage');
@@ -51,6 +52,7 @@ Route::post('/lang', function (\Illuminate\Http\Request $request) {
     return redirect()->back();
 })->name('lang.switch.post');
 
+
 // Auth Routes
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -64,9 +66,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 // Cart Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/generate-payment', [CheckoutController::class, 'generatePayment'])->name('checkout.generate-payment');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
@@ -79,6 +84,9 @@ Route::middleware('auth')->group(function () {
         return view('pages.dashboard');
     })->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Midtrans Payment Routes
+    Route::post('/cart/pay', [\App\Http\Controllers\PaymentController::class, 'pay'])->middleware('auth')->name('cart.pay');
 });
 
 // Guest Routes
@@ -88,8 +96,9 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], 
     Route::post('/trainer/{trainer}/contract/store', [TrainerController::class, 'storeContract'])->name('trainer.contract.store');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
-    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/transaction/{transaction}/pay', [RiwayatTransaksiController::class, 'payTransaction'])->name('transaction.pay');
+    Route::get('/transaction/{transaction}/details', [RiwayatTransaksiController::class, 'showDetails'])->name('transaction.details');
 });
 
 // Member Routes
@@ -98,8 +107,9 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
-    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/transaction/{transaction}/pay', [RiwayatTransaksiController::class, 'payTransaction'])->name('transaction.pay');
+    Route::get('/transaction/{transaction}/details', [RiwayatTransaksiController::class, 'showDetails'])->name('transaction.details');
 });
 
 // Admin Routes
