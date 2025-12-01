@@ -68,9 +68,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
 });
 
 // Profile Routes
@@ -119,6 +119,11 @@ Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'a
     Route::delete('/akun/{id}', [KelolaAkunController::class, 'destroy'])->name('akun.destroy');
     Route::get('/transaksi', [CatatTransaksiController::class, 'index'])->name('transaksi');
 });
+
+// Broadcasting Authentication
+Route::post('/broadcasting/auth', function () {
+    return \Illuminate\Support\Facades\Auth::user();
+})->middleware('auth');
 
 // Trainer Routes
 Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {

@@ -42,14 +42,15 @@ class ChatController extends Controller
     }
 
     // Send message (AJAX/POST)
+
     public function send(Request $request, $roomId)
     {
-        $room = ChatRoom::findOrFail($roomId);
+        $room = \App\Models\ChatRoom::findOrFail($roomId);
         $user = Auth::user();
 
         if (
-            ($user->role == 'TRAINER' && $room->trainer_id != $user->id) ||
-            ($user->role == 'MEMBER' && $room->member_id != $user->id)
+            ($user->role === 'TRAINER' && $room->trainer_id !== $user->id) ||
+            ($user->role === 'MEMBER' && $room->member_id !== $user->id)
         ) {
             abort(403);
         }
@@ -58,17 +59,26 @@ class ChatController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
-        $message = ChatMessage::create([
+        $message = \App\Models\ChatMessage::create([
             'chat_room_id' => $room->id,
             'sender_id' => $user->id,
             'message' => $request->message,
         ]);
 
-        broadcast(new ChatMessageSent($message))->toOthers();
+        // Broadcast ke orang lain
+        broadcast(new \App\Events\ChatMessageSent($message->load('sender')))->toOthers();
 
+        // Return pesan yang baru saja dikirim ke pengirim
         return response()->json([
             'status' => 'ok',
-            'message' => $message->load('sender')
+            'message' => [
+                'id' => $message->id,
+                'chat_room_id' => $message->chat_room_id,
+                'sender_id' => (string)$user->id,
+                'sender_name' => $user->nama,
+                'message' => $message->message,
+                'created_at' => $message->created_at->format('H:i d-m-Y'),
+            ]
         ]);
     }
 }
