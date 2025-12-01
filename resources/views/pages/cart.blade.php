@@ -38,20 +38,21 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-400 text-sm">{{ __('Quantity') }}:</span>
                                 <div class="flex items-center bg-gray-700/50 rounded-lg border border-gray-600">
-                                    <button onclick="updateQuantity('{{ $item->id }}', 'decrease')"
+                                    <button onclick="updateQuantity('{{ $item->id }}', 'decrease')" data-stock="{{ $item->suplemen->stok ?? 0 }}"
                                         class="px-3 py-2 text-white hover:bg-gray-600 transition font-bold">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
                                     <span class="px-4 py-2 text-white font-semibold min-w-[3rem] text-center">{{ $item->jumlah_produk ?? 1 }}</span>
-                                    <button onclick="updateQuantity('{{ $item->id }}', 'increase')"
+                                    <button onclick="updateQuantity('{{ $item->id }}', 'increase')" data-stock="{{ $item->suplemen->stok ?? 0 }}"
                                         class="px-3 py-2 text-white hover:bg-gray-600 transition font-bold">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
                                 </div>
+                                <span class="text-gray-400 text-xs">({{ __('Stock') }}: {{ $item->suplemen->stok ?? 0 }})</span>
                             </div>
                         </div>
 
@@ -191,16 +192,13 @@
 
                     <!-- Buttons -->
                     <div class="space-y-3 pt-4 border-t border-red-500/30">
-                        <form action="{{ route('cart.checkout') }}" method="POST">
-                            @csrf
-                            <button type="submit"
-                                class="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-bold transition duration-300 shadow-md flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                                </svg>
-                                {{ __('Proceed to Checkout') }}
-                            </button>
-                        </form>
+                        <a href="{{ route('checkout.index') }}"
+                            class="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-bold transition duration-300 shadow-md flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                            </svg>
+                            {{ __('Proceed to Checkout') }}
+                        </a>
 
                         <a href="{{ route('suplemen') }}"
                             class="block w-full px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white text-center rounded-lg font-bold transition duration-300">
@@ -233,7 +231,6 @@
 <x-footer class="bg-gray-900 border-t border-gray-800" />
 
 <script>
-    // expose as global to ensure inline onclick handlers can access it
     window.updateQuantity = function(itemId, action) {
         fetch(`/cart/update/${itemId}`, {
                 method: 'POST',
@@ -249,11 +246,13 @@
             .then(data => {
                 if (data.success) {
                     window.location.reload();
+                } else if (data.message) {
+                    alert(data.message);
                 }
             })
             .catch(err => {
                 console.error('Failed to update cart quantity', err);
-                // Optionally show a small toast or alert
+                alert('Error updating quantity');
             });
     };
 </script>
