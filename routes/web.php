@@ -13,7 +13,6 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PerbaruiJadwalController;
 use App\Http\Controllers\PerbaruiMembershipController;
 use App\Http\Controllers\RiwayatTransaksiController;
-use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
 use App\Http\Controllers\ChatController;
@@ -30,11 +29,9 @@ Route::post('/suplemen/add-to-cart', [SuplemenController::class, 'addToCart'])->
 
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
-    Route::get('/trainer', function () {
-        return view('pages.trainer');
-    })->name('trainer');
-    Route::get('/trainer/{trainer}', [KontrakTrainerController::class, 'formTrainer'])->name('trainer.contract');
-    Route::post('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'konfirmasiDanPembayaran'])->name('trainer.contract.store');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer/{trainer}', [KontrakTrainerController::class, 'show'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'store'])->name('trainer.contract.store');
     Route::get('/jadwal', function () {
         return view('pages.guest.jadwal');
     })->name('jadwal');
@@ -84,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     // Contract Checkout Routes
     Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
     Route::post('/contract/checkout/generate-payment', [KontrakTrainerController::class, 'generatePayment'])->name('contract.generate-payment');
+    Route::post('/contract/confirm-payment', [KontrakTrainerController::class, 'confirmPayment'])->name('contract.confirm-payment');
 });
 
 // Profile Routes
@@ -97,11 +95,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/pay', [\App\Http\Controllers\PaymentController::class, 'pay'])->middleware('auth')->name('cart.pay');
 });
 
-// Guest Routes
+// Guest Routes (authenticated users without MEMBER role)
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
-    Route::get('/trainer/{trainer}/contract', [TrainerController::class, 'showContract'])->name('trainer.contract');
-    Route::post('/trainer/{trainer}/contract/store', [TrainerController::class, 'storeContract'])->name('trainer.contract.store');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'show'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract/store', [KontrakTrainerController::class, 'store'])->name('trainer.contract.store');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
@@ -111,7 +109,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], 
 
 // Member Routes
 Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
@@ -145,9 +143,9 @@ Route::post('/broadcasting/auth', function () {
 
 // Trainer Routes
 Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {
-    Route::get('/jadwal', [PerbaruiJadwalController::class, 'trainer'])->name('jadwal');
+    Route::get('/jadwal', [KontrakTrainerController::class, 'scheduleList'])->name('jadwal');
+    Route::get('/clients', [KontrakTrainerController::class, 'memberList'])->name('clients');
+    Route::post('/jadwal/update/{id}', [KontrakTrainerController::class, 'updateSchedule'])->name('jadwal.update');
     // Edit client/contract form for trainers
     Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
-    // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
-    Route::post('/jadwal/update', [PerbaruiJadwalController::class, 'update'])->name('jadwal.update');
 });

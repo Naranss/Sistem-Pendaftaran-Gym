@@ -22,12 +22,11 @@ class PerbaruiJadwalController extends Controller
         $jadwalWorkout = collect();
 
         // Check for active contracts related to the current user.
-        // We treat 'active' as having a `durasiKontrak` in the future.
-        $contractsQuery = Kontrak::query()->where('id_client', $user->id);
-
-
-        // Only consider contracts that are still active (durasiKontrak > now)
-        $contracts = $contractsQuery->where('tanggal_berakhir', '>', now())->get();
+        // Must have status='active' AND tanggal_berakhir in the future
+        $contracts = Kontrak::where('id_client', $user->id)
+            ->where('status', 'active')
+            ->where('tanggal_berakhir', '>', now())
+            ->get();
 
         // If there are active contracts, check for jadwal entries matching the client+trainer combination
         if ($contracts->isNotEmpty()) {
@@ -73,6 +72,7 @@ class PerbaruiJadwalController extends Controller
     public function trainer()
     {
         $contracts = Kontrak::where('id_trainer', Auth::id())
+            ->where('status', 'active')
             ->where('tanggal_berakhir', '>', now())
             ->get();
 

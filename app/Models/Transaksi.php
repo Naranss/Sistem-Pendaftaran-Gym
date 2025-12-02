@@ -19,7 +19,6 @@ class Transaksi extends Model
         'status',
         'tanggal',
         'metode_pembayaran',
-        'id_kontrak'
     ];
 
     # relasi ke tabel keranjang

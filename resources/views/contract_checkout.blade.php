@@ -143,6 +143,9 @@
                 payButton.textContent = processingText;
 
                 // Call generatePayment endpoint to create transaction and snap token
+                const contractId = @json($contract->id ?? null);
+                const trainerId = @json($trainer->id ?? null);
+                
                 fetch('/contract/checkout/generate-payment', {
                     method: 'POST',
                     headers: {
@@ -150,8 +153,8 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : ''
                     },
                     body: JSON.stringify({
-                        contract_id: {{ $contract->id ?? 'null' }},
-                        trainer_id: {{ $trainer->id ?? 'null' }}
+                        contract_id: contractId,
+                        trainer_id: trainerId
                     })
                 })
                 .then(response => {
@@ -162,12 +165,37 @@
                     console.log('Generate payment response:', data);
                     
                     if (data.success && data.snap_token) {
+                        const orderId = data.order_id;
+                        
                         // Open Snap payment with the generated token
                         window.snap.pay(data.snap_token, {
                             onSuccess: function(result) {
                                 console.log('Payment success result:', result);
-                                alert('Payment successful! Your contract is now active.');
-                                window.location.href = '{{ route("chat.room.index") }}';
+                                
+                                // Call endpoint to update contract status after payment success
+                                fetch('/contract/confirm-payment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : ''
+                                    },
+                                    body: JSON.stringify({
+                                        contract_id: contractId,
+                                        order_id: orderId
+                                    })
+                                })
+                                .then(res => res.json())
+                                .then(confirmData => {
+                                    console.log('Confirm payment response:', confirmData);
+                                    alert('Payment successful! Your contract is now active.');
+                                    window.location.href = '{{ route("chat.room.index") }}';
+                                })
+                                .catch(err => {
+                                    console.error('Confirm payment error:', err);
+                                    // Still redirect even if confirm fails, as payment was successful
+                                    alert('Payment successful! Your contract is now active.');
+                                    window.location.href = '{{ route("chat.room.index") }}';
+                                });
                             },
                             onPending: function(result) {
                                 console.log('Payment pending result:', result);
