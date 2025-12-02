@@ -23,7 +23,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(12),
                 'harga' => 250000,
                 'stok' => 50,
-                'gambar' => 'Protein Whey.jpeg',
+                'gambar' => 'Protein Whey.png',
             ],
             [
                 'nama_suplemen' => 'Creatine',
@@ -31,7 +31,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addYears(2),
                 'harga' => 150000,
                 'stok' => 30,
-                'gambar' => 'creatine.jpeg',
+                'gambar' => 'creatine.png',
             ],
             [
                 'nama_suplemen' => 'BCAA',
@@ -39,7 +39,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(18),
                 'harga' => 200000,
                 'stok' => 40,
-                'gambar' => 'BCAA.jpeg',
+                'gambar' => 'BCAA.png',
             ],
             [
                 'nama_suplemen' => 'Optimum Nutrition Gold Standard Whey',
@@ -47,7 +47,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(12),
                 'harga' => 450000,
                 'stok' => 40,
-                'gambar' => 'Optimum Nutrition Gold Standard Whey.jpeg',
+                'gambar' => 'Optimum Nutrition Gold Standard Whey.png',
             ],
             [
                 'nama_suplemen' => 'Dymatize ISO 100',
@@ -71,7 +71,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(12),
                 'harga' => 400000,
                 'stok' => 45,
-                'gambar' => 'Rule One R1 Whey Blend.jpeg',
+                'gambar' => 'Rule One R1 Whey Blend.png',
             ],
             [
                 'nama_suplemen' => 'MuscleTech NitroTech Whey Gold',
@@ -87,7 +87,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(11),
                 'harga' => 410000,
                 'stok' => 32,
-                'gambar' => 'BSN Syntha-6.jpeg',
+                'gambar' => 'BSN Syntha-6.png',
             ],
             [
                 'nama_suplemen' => 'Ultimate Nutrition Prostar Whey',
@@ -144,7 +144,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addMonths(9),
                 'harga' => 480000,
                 'stok' => 20,
-                'gambar' => 'Pre Jym Pre-Workout.jpg',
+                'gambar' => 'Pre Jym Pre-Workout.png',
             ],
             [
                 'nama_suplemen' => 'MuscleTech Platinum Creatine',
@@ -160,7 +160,7 @@ class SuplemenSeeder extends Seeder
                 'tanggal_kadaluarsa' => Carbon::now()->addYears(2),
                 'harga' => 190000,
                 'stok' => 45,
-                'gambar' => 'ON Micronized Creatine Powder.jpeg',
+                'gambar' => 'ON Micronized Creatine Powder.png',
             ],
             [
                 'nama_suplemen' => 'Lipo 6 Black',
