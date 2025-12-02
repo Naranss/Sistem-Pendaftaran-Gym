@@ -10,7 +10,7 @@
                     @else
                         <span class="text-white">Trainer: {{ $room->trainer->nama }}</span>
                     @endif
-                    <a href="{{ route('chat.show', $room->id) }}"
+                    <a href="{{ route('chat.room.show', $room->id) }}"
                        class="bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-300 transition">Buka Chat</a>
                 </li>
             @empty

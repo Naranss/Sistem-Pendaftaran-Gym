@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\JadwalWorkout;
 use App\Models\Akun;
 use App\Models\Kontrak;
+use App\Models\ChatRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,10 +58,16 @@ class TrainerController extends Controller
             return back()->with('error', __('You already have a contract with this trainer'));
         }
 
-        Kontrak::create([
+        $kontrak = Kontrak::create([
             'id_trainer' => $trainerId,
             'id_client' => $clientId,
             'tanggal_berakhir' => $validated['tanggal_berakhir'],
+        ]);
+
+        // Otomatis buat chat room ketika kontrak dibuat
+        ChatRoom::firstOrCreate([
+            'trainer_id' => $trainerId,
+            'member_id' => $clientId,
         ]);
 
         return redirect()->route('guest.jadwal')->with('success', __('Contract created successfully'));
