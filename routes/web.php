@@ -18,6 +18,7 @@ use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\KontrakTrainerController;
 
 Route::get('/', function () {
     return view('pages.homepage');
@@ -30,8 +31,10 @@ Route::post('/suplemen/add-to-cart', [SuplemenController::class, 'addToCart'])->
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
     Route::get('/trainer', function () {
-        return view('pages.guest.trainer');
+        return view('pages.trainer');
     })->name('trainer');
+    Route::get('/trainer/{trainer}', [KontrakTrainerController::class, 'formTrainer'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'konfirmasiDanPembayaran'])->name('trainer.contract.store');
     Route::get('/jadwal', function () {
         return view('pages.guest.jadwal');
     })->name('jadwal');
@@ -77,6 +80,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
     Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
     Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
+    
+    // Contract Checkout Routes
+    Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
+    Route::post('/contract/checkout/generate-payment', [KontrakTrainerController::class, 'generatePayment'])->name('contract.generate-payment');
 });
 
 // Profile Routes
