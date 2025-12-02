@@ -41,6 +41,36 @@ class ChatController extends Controller
         return view('chat.room', compact('room'));
     }
 
+    // Get messages as JSON (untuk AJAX)
+    public function getMessages($roomId)
+    {
+        $room = ChatRoom::with('messages.sender')->findOrFail($roomId);
+        $user = Auth::user();
+
+        // Authorization
+        if (
+            ($user->role == 'TRAINER' && $room->trainer_id != $user->id) ||
+            ($user->role == 'MEMBER' && $room->member_id != $user->id)
+        ) {
+            abort(403);
+        }
+
+        $messages = $room->messages->map(function ($msg) {
+            return [
+                'id' => $msg->id,
+                'sender_id' => $msg->sender_id,
+                'sender_name' => $msg->sender->nama,
+                'message' => $msg->message,
+                'time' => $msg->created_at->format('H:i d-m-Y'),
+                'created_at' => $msg->created_at,
+            ];
+        });
+
+        return response()->json([
+            'messages' => $messages
+        ]);
+    }
+
     // Send message (AJAX/POST)
 
     public function send(Request $request, $roomId)
@@ -65,19 +95,15 @@ class ChatController extends Controller
             'message' => $request->message,
         ]);
 
-        // Broadcast ke orang lain
         broadcast(new \App\Events\ChatMessageSent($message->load('sender')))->toOthers();
 
-        // Return pesan yang baru saja dikirim ke pengirim
         return response()->json([
             'status' => 'ok',
             'message' => [
-                'id' => $message->id,
-                'chat_room_id' => $message->chat_room_id,
-                'sender_id' => (string)$user->id,
                 'sender_name' => $user->nama,
                 'message' => $message->message,
-                'created_at' => $message->created_at->format('H:i d-m-Y'),
+                'created_at' => $message->created_at->format('H:i d-m-Y H:i'),
+                'sender_id' => $user->id,
             ]
         ]);
     }

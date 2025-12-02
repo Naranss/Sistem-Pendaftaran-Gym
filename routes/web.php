@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
     Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
 });
 
 // Profile Routes
