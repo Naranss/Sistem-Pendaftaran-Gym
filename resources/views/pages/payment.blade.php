@@ -71,6 +71,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const snapToken = '{{ $snapToken }}';
         const payButton = document.getElementById('pay-button');
+        const orderId = '{{ $transaction->order_id }}';
+        const transactionId = '{{ $transaction->id }}';
 
         if (payButton) {
             payButton.addEventListener('click', function() {
@@ -81,8 +83,54 @@
                 window.snap.pay(snapToken, {
                     onSuccess: function(result) {
                         console.log('Payment success result:', result);
-                        alert('Payment successful! Your order is being processed.');
-                        window.location.href = '{{ route("guest.riwayat") }}';
+                        
+                        // If this is a contract payment (order_id starts with CONTRACT-), 
+                        // confirm the payment to update contract status
+                        if (orderId.startsWith('CONTRACT-')) {
+                            console.log('This is a contract payment, confirming...');
+                            
+                            // Extract contract_id from order_id format: CONTRACT-{CONTRACT_ID}-{TIMESTAMP}
+                            const orderParts = orderId.split('-');
+                            const contractId = orderParts[1];
+                            
+                            // Call confirmation endpoint
+                            const confirmPaymentData = JSON.stringify({
+                                contract_id: contractId,
+                                order_id: orderId
+                            });
+                            
+                            const confirmPaymentPromise = new Promise((resolve) => {
+                                fetch('/contract/confirm-payment', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : ''
+                                    },
+                                    body: confirmPaymentData,
+                                    keepalive: true
+                                })
+                                .then(res => res.json())
+                                .then(confirmData => {
+                                    console.log('Confirm payment response:', confirmData);
+                                    resolve(true);
+                                })
+                                .catch(err => {
+                                    console.error('Confirm payment error:', err);
+                                    resolve(false);
+                                });
+                                
+                                setTimeout(() => resolve(false), 5000);
+                            });
+                            
+                            confirmPaymentPromise.then(() => {
+                                alert('Payment successful! Your contract is now active.');
+                                window.location.href = '{{ route("chat.room.index") }}';
+                            });
+                        } else {
+                            // Regular product payment
+                            alert('Payment successful! Your order is being processed.');
+                            window.location.href = '{{ route("guest.riwayat") }}';
+                        }
                     },
                     onPending: function(result) {
                         console.log('Payment pending result:', result);

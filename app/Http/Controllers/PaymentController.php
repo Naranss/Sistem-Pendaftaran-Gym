@@ -10,6 +10,7 @@ use App\Models\Keranjang;
 use App\Models\Transaksi;
 use App\Models\ProdukTransaksi;
 use App\Models\Suplemen;
+use App\Models\Kontrak;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -97,6 +98,16 @@ class PaymentController extends Controller
             $paymentType = $request->input('payment_type');
             $fraudStatus = $request->input('fraud_status');
 
+            // Log all incoming callback data
+            Log::info('Midtrans callback received', [
+                'order_id' => $orderId,
+                'status_code' => $statusCode,
+                'transaction_status' => $transactionStatus,
+                'payment_type' => $paymentType,
+                'gross_amount' => $grossAmount,
+                'fraud_status' => $fraudStatus
+            ]);
+
             // Validate required fields
             if (!$orderId || !$statusCode || !$grossAmount || !$transactionStatus) {
                 Log::warning('Missing required Midtrans callback fields', [
@@ -132,27 +143,85 @@ class PaymentController extends Controller
 
             Log::info("Transaction {$orderId} status mapped from {$transactionStatus} to {$statusMapping}");
 
-            // If payment successful, clear the user's cart and decrease stock
+            // If payment successful, process based on transaction type
             if ($statusMapping === 'success') {
-                // Get all products in this transaction
-                $produkTransaksi = ProdukTransaksi::where('id_transaksi', $transaksi->id)->get();
-                
-                // Decrease stock for each product
-                foreach ($produkTransaksi as $prod) {
-                    if ($prod->id_produk) {
-                        // This is a supplement product
-                        $suplemen = Suplemen::find($prod->id_produk);
-                        if ($suplemen) {
-                            $suplemen->stok = max(0, ($suplemen->stok ?? 0) - ($prod->jumlah_produk ?? 1));
-                            $suplemen->save();
-                            Log::info("Stock decreased for suplemen {$suplemen->id}: -{$prod->jumlah_produk}, new stock: {$suplemen->stok}");
+                // Check if order ID matches a contract payment pattern (CONTRACT-{CONTRACT_ID}-{TIMESTAMP})
+                if (strpos($orderId, 'CONTRACT-') === 0) {
+                    // This is a contract payment - update the contract status to active
+                    // Extract contract ID from order: CONTRACT-{CONTRACT_ID}-{TIMESTAMP}
+                    $orderParts = explode('-', $orderId);
+                    $contractId = $orderParts[1] ?? null;
+                    
+                    Log::info("Contract payment successful for order: {$orderId}, contract_id: {$contractId}");
+                    
+                    // Find and update the contract status from pending to active
+                    try {
+                        $kontrak = Kontrak::where('id', $contractId)
+                            ->where('status', 'pending')
+                            ->firstOrFail();
+                        
+                        Log::info("Found pending contract: {$contractId}");
+                        
+                        // Update contract status to active - this will trigger boot event to create ChatRoom
+                        $kontrak->status = 'active';
+                        $kontrak->save();
+                        
+                        Log::info("Contract status updated to active", [
+                            'contract_id' => $contractId,
+                            'status' => $kontrak->status
+                        ]);
+                        
+                        // Verify ProdukTransaksi is linked
+                        $prodTransaksi = ProdukTransaksi::where('id_transaksi', $transaksi->id)
+                            ->where('id_kontrak', $contractId)
+                            ->first();
+                        
+                        if (!$prodTransaksi) {
+                            // If for some reason ProdukTransaksi doesn't exist, create it
+                            ProdukTransaksi::create([
+                                'id_transaksi' => $transaksi->id,
+                                'id_kontrak' => $contractId,
+                                'harga_kontrak' => $transaksi->total,
+                            ]);
+                            Log::info("ProdukTransaksi created in callback", [
+                                'contract_id' => $contractId,
+                                'transaction_id' => $transaksi->id
+                            ]);
+                        }
+
+                        Log::info("Contract activated successfully after payment", [
+                            'contract_id' => $contractId,
+                            'order_id' => $orderId
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Error updating contract after payment: " . $e->getMessage(), [
+                            'order_id' => $orderId,
+                            'contract_id' => $contractId ?? 'unknown',
+                            'trace' => $e->getTraceAsString()
+                        ]);
+                    }
+                } else {
+                    // This is a product/supplement payment - decrease stock and clear cart
+                    // Get all products in this transaction
+                    $produkTransaksi = ProdukTransaksi::where('id_transaksi', $transaksi->id)->get();
+                    
+                    // Decrease stock for each product
+                    foreach ($produkTransaksi as $prod) {
+                        if ($prod->id_produk) {
+                            // This is a supplement product
+                            $suplemen = Suplemen::find($prod->id_produk);
+                            if ($suplemen) {
+                                $suplemen->stok = max(0, ($suplemen->stok ?? 0) - ($prod->jumlah_produk ?? 1));
+                                $suplemen->save();
+                                Log::info("Stock decreased for suplemen {$suplemen->id}: -{$prod->jumlah_produk}, new stock: {$suplemen->stok}");
+                            }
                         }
                     }
+                    
+                    // Clear the user's cart
+                    Keranjang::where('id_akun', $transaksi->id_akun)->delete();
+                    Log::info("Cart cleared for user {$transaksi->id_akun} after successful payment");
                 }
-                
-                // Clear the user's cart
-                Keranjang::where('id_akun', $transaksi->id_akun)->delete();
-                Log::info("Cart cleared for user {$transaksi->id_akun} after successful payment");
             }
 
             return response()->json(['message' => 'Callback received and processed']);

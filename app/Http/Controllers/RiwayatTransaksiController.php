@@ -29,6 +29,7 @@ class RiwayatTransaksiController extends Controller
         $transaction = Transaksi::where('id', $transactionId)
             ->where('id_akun', $user->id)
             ->where('status', 'pending')
+            ->with('produkTransaksi')
             ->first();
 
         if (!$transaction) {
@@ -41,9 +42,35 @@ class RiwayatTransaksiController extends Controller
             Config::$isSanitized = true;
             Config::$is3ds = true;
 
-            // Generate a completely fresh unique order_id to avoid Midtrans conflicts
-            // Use PaymentController's method for consistency
-            $uniqueOrderId = \App\Http\Controllers\PaymentController::generateOrderId();
+            // Check if this transaction contains contract products
+            $contractId = null;
+            if ($transaction->produkTransaksi && $transaction->produkTransaksi->count() > 0) {
+                // Check if any product is a contract
+                foreach ($transaction->produkTransaksi as $prod) {
+                    if ($prod->id_kontrak) {
+                        $contractId = $prod->id_kontrak;
+                        break; // Use the first contract found
+                    }
+                }
+            }
+
+            // Generate order ID based on whether it's a contract or product purchase
+            if ($contractId) {
+                // This is a contract payment - use CONTRACT-{CONTRACT_ID}-{TIMESTAMP} format
+                $uniqueOrderId = 'CONTRACT-' . $contractId . '-' . time();
+                \Illuminate\Support\Facades\Log::info('Generating contract order ID from transaction history', [
+                    'transaction_id' => $transactionId,
+                    'contract_id' => $contractId,
+                    'order_id' => $uniqueOrderId
+                ]);
+            } else {
+                // This is a product purchase - use default ORDER- format
+                $uniqueOrderId = \App\Http\Controllers\PaymentController::generateOrderId();
+                \Illuminate\Support\Facades\Log::info('Generating product order ID from transaction history', [
+                    'transaction_id' => $transactionId,
+                    'order_id' => $uniqueOrderId
+                ]);
+            }
             
             $snapToken = Snap::getSnapToken([
                 'transaction_details' => [
