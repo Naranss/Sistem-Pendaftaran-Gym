@@ -24,9 +24,15 @@
                     <div class="flex items-start gap-4">
                         <!-- Product Image -->
                         <div class="flex-shrink-0">
+                            @if($item->suplemen && $item->suplemen->gambarSuplemen->count())
+                            <img src="{{ asset($item->suplemen->gambarSuplemen->first()->path) }}"
+                                alt="{{ $item->suplemen->gambarSuplemen->first()->img_alt }}"
+                                class="w-24 h-24 object-cover rounded-lg bg-gray-700 border border-gray-600">
+                            @else
                             <img src="{{ asset('assets/images/default.png') }}"
                                 alt="{{ $item->suplemen->nama_suplemen }}"
                                 class="w-24 h-24 object-cover rounded-lg bg-gray-700 border border-gray-600">
+                            @endif
                         </div>
 
                         <!-- Product Info -->

@@ -43,7 +43,7 @@
                             <img
                                 src="{{ asset($img->path) }}"
                                 alt="{{ $img->img_alt }}"
-                                class="w-32 h-32 object-cover rounded-lg border border-gray-700">
+                                class="w-48 h-auto object-cover rounded-lg border border-gray-700">
                             @endforeach
                             @else
                             <p class="text-gray-500 italic">{{ __('No product image available') }}</p>
