@@ -167,6 +167,14 @@
                     class="w-16 h-16 group-hover:scale-110 transition-transform duration-300" />
                 </x-slot>
             </x-category>
+            <x-category label="{{ __('Chat') }}" route="{{ route('chat.room.index') }}">
+                <x-slot name="icon">
+                    <img 
+                    src="{{ asset('assets/icons/Chat.svg') }}" 
+                    alt="Chat Icon" 
+                    class="w-16 h-16 group-hover:scale-110 transition-transform duration-300" />
+                </x-slot>
+            </x-category>
 
         {{-- ================= MEMBER ================= --}}
         @elseif(Auth::user() && Auth::user()->hasRole('MEMBER'))
@@ -175,6 +183,14 @@
                     <img 
                     src="{{ asset('assets/icons/Suplemen.svg') }}" 
                     alt="Supplements Icon" 
+                    class="w-16 h-16 group-hover:scale-110 transition-transform duration-300" />
+                </x-slot>
+            </x-category>
+            <x-category label="{{ __('Chat') }}" route="{{ route('chat.room.index') }}">
+                <x-slot name="icon">
+                    <img 
+                    src="{{ asset('assets/icons/Chat.svg') }}" 
+                    alt="Chat Icon" 
                     class="w-16 h-16 group-hover:scale-110 transition-transform duration-300" />
                 </x-slot>
             </x-category>
