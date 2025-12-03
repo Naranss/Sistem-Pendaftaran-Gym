@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('tabel_jadwal');
             $table->integer("minggu_ke")->nullable();
             $table->integer("hari")->nullable();
-            $table->string('jenis_workout')->default('Belum Ditentukan');
+            $table->string('jenis_workout')->default('-');
             $table->timestamps();
         });
     }
