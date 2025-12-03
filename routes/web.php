@@ -101,6 +101,10 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
     Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
 });
 
 // Admin Routes
@@ -133,4 +137,8 @@ Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' =
     Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
     // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
     Route::post('/jadwal/update', [PerbaruiJadwalController::class, 'update'])->name('jadwal.update');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
 });

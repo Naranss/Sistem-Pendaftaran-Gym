@@ -19,15 +19,23 @@ class ChatController extends Controller
         } else if ($user->role == 'MEMBER') {
             $rooms = ChatRoom::where('member_id', $user->id)->with('trainer')->get();
         } else {
-            $rooms = [];
+            $rooms = collect();
         }
-        return view('chat.index', compact('rooms'));
+
+        // Jika punya minimal satu room, langsung redirect ke room pertama
+        if ($rooms->count() > 0) {
+            $firstRoom = $rooms->first();
+            return redirect()->route('chat.room.show', $firstRoom->id);
+        }
+
+        // Jika tidak punya room, kembali ke homepage dengan pesan
+        return redirect()->route('home')->with('status', 'Tidak ada room chat yang tersedia.');
     }
 
     // Show chat room
     public function show($roomId)
     {
-        $room = ChatRoom::with('messages.sender')->findOrFail($roomId);
+        $room = ChatRoom::with('messages.sender', 'member', 'trainer')->findOrFail($roomId);
         $user = Auth::user();
 
         // Authorization: trainer/member only
@@ -38,7 +46,23 @@ class ChatController extends Controller
             abort(403);
         }
 
-        return view('chat.room', compact('room'));
+        // Ambil semua room milik user untuk sidebar kontak
+        if ($user->role == 'TRAINER') {
+            $rooms = ChatRoom::where('trainer_id', $user->id)
+                ->with('member', 'trainer')
+                ->get();
+        } elseif ($user->role == 'MEMBER') {
+            $rooms = ChatRoom::where('member_id', $user->id)
+                ->with('member', 'trainer')
+                ->get();
+        } else {
+            $rooms = collect();
+        }
+
+        return view('chat.room', [
+            'room' => $room,
+            'rooms' => $rooms,
+        ]);
     }
 
     // Get messages as JSON (untuk AJAX)
