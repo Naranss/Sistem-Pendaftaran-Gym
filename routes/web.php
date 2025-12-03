@@ -63,7 +63,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-// Cart Routes
+// Auth route
 Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
     Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
     Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
     
     // Contract Checkout Routes
     Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
