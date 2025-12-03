@@ -35,6 +35,18 @@ class Akun extends Authenticatable
     }
 
     /**
+     * Update the model in the database.
+     *
+     * @param array $attributes
+     * @param array $options
+     * @return bool
+     */
+    public function update(array $attributes = [], array $options = [])
+    {
+        return parent::update($attributes, $options);
+    }
+
+    /**
      * Get the user's profile photo URL.
      */
     public function getProfilePhotoUrlAttribute()

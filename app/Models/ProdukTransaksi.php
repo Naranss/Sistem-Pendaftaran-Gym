@@ -40,8 +40,8 @@ class ProdukTransaksi extends Model
         return $this->belongsTo(Kontrak::class, 'id_kontrak');
     }
 
-    // public function membership()
-    // {
-    //     return $this->belongsTo(Membership::class, 'id_membership');
-    // }
+    public function membershipPlan()
+    {
+        return $this->belongsTo(MembershipPlan::class, 'id_membership');
+    }
 }
