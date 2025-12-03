@@ -63,7 +63,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-// Cart Routes
+// Auth route
 Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -79,12 +79,18 @@ Route::middleware(['auth'])->group(function () {
 <<<<<<< HEAD
 =======
     Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
     
     // Contract Checkout Routes
     Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
     Route::post('/contract/checkout/generate-payment', [KontrakTrainerController::class, 'generatePayment'])->name('contract.generate-payment');
     Route::post('/contract/confirm-payment', [KontrakTrainerController::class, 'confirmPayment'])->name('contract.confirm-payment');
+<<<<<<< HEAD
 >>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
+=======
+    Route::get('/membership/payment', [MemberController::class, 'membershipPayment'])->name('membership.payment');
+    Route::post('/membership/confirm-payment', [MemberController::class, 'confirmMembershipPayment'])->name('membership.confirm-payment');
+>>>>>>> e52a253c4ba32425f981fe02fc292a575ac92dea
 });
 
 // Profile Routes
@@ -117,6 +123,10 @@ Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
     Route::get('/transaction/{transaction}/pay', [RiwayatTransaksiController::class, 'payTransaction'])->name('transaction.pay');
     Route::get('/transaction/{transaction}/details', [RiwayatTransaksiController::class, 'showDetails'])->name('transaction.details');
 });
@@ -151,4 +161,10 @@ Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' =
     Route::post('/jadwal/update/{id}', [KontrakTrainerController::class, 'updateSchedule'])->name('jadwal.update');
     // Edit client/contract form for trainers
     Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
+    // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
+    Route::post('/jadwal/update', [PerbaruiJadwalController::class, 'update'])->name('jadwal.update');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
+    Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
+    Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
 });

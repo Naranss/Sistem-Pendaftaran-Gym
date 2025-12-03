@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('id_transaksi')->nullable()->constrained('transaksi')->onDelete('restrict');
             $table->foreignId('id_produk')->nullable()->constrained('suplemen')->onDelete('restrict');
             $table->foreignId('id_kontrak')->nullable()->constrained('kontrak')->onDelete('restrict');
-            $table->foreignId('id_membership')->nullable()->constrained('membership')->onDelete('restrict');
+            $table->foreignId('id_membership')->nullable()->constrained('membership_plan')->onDelete('restrict');
             $table->integer('jumlah_produk')->nullable();
             $table->integer('harga_produk')->nullable();
             $table->integer('harga_kontrak')->nullable();

@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('membership', function (Blueprint $table) {
+        Schema::create('membership_plan', function (Blueprint $table) {
             $table->id();
-            $table->string('deskripsi')->nullable();
-            $table->integer('durasi')->default(1);
+            $table->string('nama_paket_id')->nullable();
+            $table->string('nama_paket_en')->nullable();
+            $table->string('deskripsi_id')->nullable();
+            $table->string('deskripsi_en')->nullable();
+            $table->integer('durasi')->default(1); // in months
             $table->integer('harga');
             $table->timestamps();
         });

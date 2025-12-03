@@ -124,7 +124,7 @@
                             
                             confirmPaymentPromise.then(() => {
                                 alert('Payment successful! Your contract is now active.');
-                                window.location.href = '{{ route("chat.room.index") }}';
+                                window.location.href = '{{ route("my.trainer") }}';
                             });
                         } else {
                             // Regular product payment

@@ -1,7 +1,7 @@
 <x-navbar />
 
 <main class="flex-grow min-h-screen bg-gradient-to-b from-gray-900 to-black py-12">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <div class="container mx-auto px-6">
         <!-- Header Section -->
         <div class="mb-12">
             <div class="flex items-center gap-3 mb-4">
@@ -14,15 +14,21 @@
         </div>
 
         @if(session('success'))
-            <div class="mb-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-300">
-                {{ session('success') }}
-            </div>
+        <div class="bg-green-500/20 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            {{ session('success') }}
+        </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
-                {{ session('error') }}
-            </div>
+        <div class="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            {{ session('error') }}
+        </div>
         @endif
 
         {{-- Search Bar --}}
@@ -57,143 +63,304 @@
             </form>
         </div>
 
-        {{-- Table --}}
-        <div class="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead class="bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Transaction Code') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Account Name') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Item Name') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Quantity') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Unit Price') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Total Price') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Date') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Payment Method') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                {{ __('Status') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-gray-800 divide-y divide-gray-700">
-                        @forelse ($transaksi as $item)
-                            <tr class="hover:bg-gray-750 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                    TRX-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+        @if($transaksi->count() > 0)
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-blue-900/40 to-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-300 text-sm">{{ __('Total Transactions') }}</p>
+                        <p class="text-white text-2xl font-bold">{{ $transaksi->total() }}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-900/40 to-green-900/20 border border-green-500/30 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-300 text-sm">{{ __('Completed') }}</p>
+                        <p class="text-white text-2xl font-bold">{{ $transaksi->where('status', 'success')->count() }}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-900/40 to-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-300 text-sm">{{ __('Pending') }}</p>
+                        <p class="text-white text-2xl font-bold">{{ $transaksi->where('status', 'pending')->count() }}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden md:block">
+            <div class="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Date') }}
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Order ID') }}
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Account Name') }}
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Description') }}
+                                </th>
+                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Amount') }}
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Method') }}
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-300 uppercase tracking-wider">
+                                    {{ __('Status') }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            @foreach($transaksi as $item)
+                            <tr class="hover:bg-gray-700/50 transition duration-200">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm">
+                                        <p class="text-white font-medium">{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : $item->created_at->format('d M Y') }}</p>
+                                        <p class="text-gray-400 text-xs">{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('H:i') : $item->created_at->format('H:i') }}</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                        <span class="px-3 py-1 bg-blue-900/40 text-blue-300 rounded-full text-sm font-semibold border border-blue-500/30">
+                                            {{ $item->order_id ?? 'TRX-' . str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     {{ $item->user->nama ?? '-' }}
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-300">
-                                    @if($item->membership)
-                                        Membership {{ ucfirst($item->membership) }}
-                                    @elseif($item->keranjang && $item->keranjang->suplemen)
-                                        {{ $item->keranjang->suplemen->nama_suplemen }}
-                                    @elseif($item->kontrak)
-                                        Kontrak Trainer
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {{ $item->jumlah_produk ?? 1 }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    @php
-                                        $hargaSatuan = 0;
-                                        if ($item->harga_membership) {
-                                            $hargaSatuan = $item->harga_membership;
-                                        } elseif ($item->harga_produk) {
-                                            $hargaSatuan = $item->harga_produk;
-                                        } elseif ($item->harga_kontrak) {
-                                            $hargaSatuan = $item->harga_kontrak;
-                                        }
-                                    @endphp
-                                    Rp {{ number_format($hargaSatuan, 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
-                                    @php
-                                        $totalHarga = 0;
-                                        if ($item->harga_membership) {
-                                            $totalHarga = $item->harga_membership * ($item->jumlah_produk ?? 1);
-                                        } elseif ($item->harga_produk) {
-                                            $totalHarga = $item->harga_produk * ($item->jumlah_produk ?? 1);
-                                        } elseif ($item->harga_kontrak) {
-                                            $totalHarga = $item->harga_kontrak;
-                                        }
-                                    @endphp
-                                    Rp {{ number_format($totalHarga, 0, ',', '.') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    <span class="px-3 py-1 rounded text-xs font-semibold bg-blue-900/30 text-blue-300 border border-blue-500/50">
-                                        {{ ucfirst($item->metode_pembayaran ?? 'pending') }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    @php
-                                        $status = $item->status ?? ($item->metode_pembayaran === 'pending' ? 'Pending' : 'Paid');
-                                        $statusClass = match(strtolower($status)) {
-                                            'lunas', 'selesai', 'paid' => 'bg-green-900/30 text-green-300 border border-green-500/50',
-                                            'pending', 'menunggu' => 'bg-yellow-900/30 text-yellow-300 border border-yellow-500/50',
-                                            'gagal', 'failed', 'canceled' => 'bg-red-900/30 text-red-300 border border-red-500/50',
-                                            default => 'bg-gray-900/30 text-gray-300 border border-gray-500/50'
-                                        };
-                                    @endphp
-                                    <span class="px-3 py-1 rounded text-xs font-semibold {{ $statusClass }}">
-                                        {{ ucfirst($status) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="px-6 py-8 text-center text-gray-400">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                                        </svg>
-                                        <p>{{ __('No transaction data found') }}</p>
-                                        @if(request('search'))
-                                            <p class="text-sm mt-1">{{ __('Try searching with different keywords') }}</p>
+                                <td class="px-6 py-4">
+                                    <div class="text-white text-sm font-medium">
+                                        @php
+                                            $products = $item->produkTransaksi ?? collect();
+                                        @endphp
+                                        @if($products->count() > 0)
+                                            <div class="space-y-1">
+                                                @foreach($products->take(2) as $prod)
+                                                    <div>
+                                                        @if($prod->membership_id)
+                                                            @php
+                                                                $membership = \App\Models\MembershipPlan::find($prod->membership_id);
+                                                            @endphp
+                                                            @if($membership)
+                                                                <span class="font-semibold">{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                                            @else
+                                                                <span class="font-semibold">{{ __('Membership') }}</span>
+                                                            @endif
+                                                        @elseif($prod->suplemen)
+                                                            <span class="font-semibold">{{ $prod->suplemen->nama_suplemen }}</span>
+                                                            <span class="text-gray-400">x{{ $prod->jumlah_produk ?? 1 }}</span>
+                                                        @elseif($prod->kontrak)
+                                                            <span class="font-semibold">{{ __('Trainer Contract') }}</span>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                                @if($products->count() > 2)
+                                                    <div class="text-gray-400 text-xs">
+                                                        +{{ $products->count() - 2 }} {{ __('more') }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400">{{ __('No details') }}</span>
                                         @endif
                                     </div>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <p class="text-xl font-bold text-white">
+                                        Rp {{ number_format($item->total ?? 0, 0, ',', '.') }}
+                                    </p>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <span class="px-3 py-1 bg-blue-900/40 text-blue-300 rounded-full text-xs font-bold border border-blue-500/30">
+                                        {{ $item->metode_pembayaran ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    @if($item->status === 'success')
+                                    <span class="px-3 py-1 bg-green-900/40 text-green-300 rounded-full text-sm font-bold border border-green-500/30 inline-flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ __('Success') }}
+                                    </span>
+                                    @elseif($item->status === 'pending')
+                                    <span class="px-3 py-1 bg-yellow-900/40 text-yellow-300 rounded-full text-sm font-bold border border-yellow-500/30 inline-flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16v-2a6 6 0 100-12 6 6 0 000 12h2z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ __('Pending') }}
+                                    </span>
+                                    @elseif($item->status === 'canceled')
+                                    <span class="px-3 py-1 bg-red-900/40 text-red-300 rounded-full text-sm font-bold border border-red-500/30 inline-flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ __('Cancelled') }}
+                                    </span>
+                                    @endif
+                                </td>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
 
-            {{-- Pagination --}}
-            @if($transaksi->hasPages())
-                <div class="bg-gray-700 px-6 py-4 border-t border-gray-600">
-                    <div class="text-white">
-                        {{ $transaksi->appends(request()->query())->links() }}
+        <!-- Mobile View -->
+        <div class="md:hidden space-y-4">
+            @foreach($transaksi as $item)
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-4 shadow-lg border border-gray-700 hover:border-red-500/50 transition duration-200">
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-4 pb-4 border-b border-gray-700">
+                    <div>
+                        <p class="text-gray-400 text-xs font-semibold uppercase">{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('d M Y') : $item->created_at->format('d M Y') }}</p>
+                        <p class="text-gray-500 text-xs">{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('H:i') : $item->created_at->format('H:i') }}</p>
+                    </div>
+                    @if($item->status === 'success')
+                    <span class="px-2 py-1 bg-green-900/40 text-green-300 rounded text-xs font-bold border border-green-500/30 inline-flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Success') }}
+                    </span>
+                    @elseif($item->status === 'pending')
+                    <span class="px-2 py-1 bg-yellow-900/40 text-yellow-300 rounded text-xs font-bold border border-yellow-500/30 inline-flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16v-2a6 6 0 100-12 6 6 0 000 12h2z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Pending') }}
+                    </span>
+                    @elseif($item->status === 'canceled')
+                    <span class="px-2 py-1 bg-red-900/40 text-red-300 rounded text-xs font-bold border border-red-500/30 inline-flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Cancelled') }}
+                    </span>
+                    @endif
+                </div>
+
+                <!-- Account Info -->
+                <div class="mb-3">
+                    <p class="text-gray-400 text-xs uppercase font-semibold">{{ __('Account') }}</p>
+                    <p class="text-white font-medium">{{ $item->user->nama ?? '-' }}</p>
+                </div>
+
+                <!-- Order ID -->
+                <div class="mb-3">
+                    <p class="text-gray-400 text-xs uppercase font-semibold">{{ __('Order ID') }}</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                        <span class="px-2 py-1 bg-blue-900/40 text-blue-300 rounded text-xs font-bold border border-blue-500/30">
+                            {{ $item->order_id ?? 'TRX-' . str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                        </span>
                     </div>
                 </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <p class="text-gray-400 text-xs uppercase font-semibold">{{ __('Description') }}</p>
+                    @php
+                        $products = $item->produkTransaksi ?? collect();
+                    @endphp
+                    @if($products->count() > 0)
+                        <div class="space-y-1 text-white text-sm">
+                            @foreach($products->take(2) as $prod)
+                                <div>
+                                    @if($prod->membership_id)
+                                        @php
+                                            $membership = \App\Models\MembershipPlan::find($prod->membership_id);
+                                        @endphp
+                                        @if($membership)
+                                            <span class="font-semibold">{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                        @else
+                                            <span class="font-semibold">{{ __('Membership') }}</span>
+                                        @endif
+                                    @elseif($prod->suplemen)
+                                        <span class="font-semibold">{{ $prod->suplemen->nama_suplemen }}</span>
+                                        <span class="text-gray-400">x{{ $prod->jumlah_produk ?? 1 }}</span>
+                                    @elseif($prod->kontrak)
+                                        <span class="font-semibold">{{ __('Trainer Contract') }}</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                            @if($products->count() > 2)
+                                <div class="text-gray-400 text-xs">
+                                    +{{ $products->count() - 2 }} {{ __('more') }}
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <span class="text-gray-400">{{ __('No details') }}</span>
+                    @endif
+                </div>
+
+                <!-- Amount and Method -->
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <p class="text-gray-400 text-xs uppercase font-semibold">{{ __('Amount') }}</p>
+                        <p class="text-lg font-bold text-white">Rp {{ number_format($item->total ?? 0, 0, ',', '.') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-xs uppercase font-semibold">{{ __('Method') }}</p>
+                        <span class="px-2 py-1 bg-blue-900/40 text-blue-300 rounded text-xs font-bold border border-blue-500/30 inline-block">
+                            {{ $item->metode_pembayaran ?? '-' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        @endif
+
+        {{-- Pagination --}}
+        @if($transaksi->hasPages())
+            <div class="mt-8 flex justify-center">
+                <div class="text-white">
+                    {{ $transaksi->appends(request()->query())->links() }}
+                </div>
+            </div>
+        @endif
+
+        @if($transaksi->count() === 0)
+        <div class="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700 p-8 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+            <p class="text-gray-400 text-lg">{{ __('No transaction data found') }}</p>
+            @if(request('search'))
+                <p class="text-gray-500 text-sm mt-2">{{ __('Try searching with different keywords') }}</p>
             @endif
         </div>
+        @endif
     </div>
 </main>
 
 <x-footer class="bg-gray-900 border-t border-gray-800" />
-

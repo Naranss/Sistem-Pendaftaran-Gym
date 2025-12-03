@@ -17,6 +17,12 @@
 
 <body class="min-h-screen flex items-center justify-center relative">
 
+    @if(isset($title) && $title === 'Chat Room')
+    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+    <div class="relative z-10 w-full min-h-screen flex items-stretch justify-center">
+        {{ $slot }}
+    </div>
+    @else
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-70"></div>
 
@@ -33,6 +39,7 @@
         </div>
 
     </div>
+    @endif
 
 </body>
 

@@ -130,159 +130,119 @@
                 @csrf
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    {{-- Monthly Plan --}}
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-red-600/50 transform hover:scale-105 transition duration-300 cursor-pointer membership-card" 
-                         data-membership="bulanan" 
-                         data-price="300000">
-                        <div class="p-6 h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-3">{{ __('Monthly') }}</h3>
-                                <div class="text-3xl font-bold text-red-500 mb-6">
-                                    Rp 300.000
-                                    <span class="text-sm text-gray-400 font-normal block">/bulan</span>
-                                </div>
-                                <ul class="space-y-2 mb-6 text-sm text-gray-300">
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('Access to all equipment') }}
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('Locker access') }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="border-2 border-transparent rounded-lg p-3 text-center membership-selected hidden bg-green-900/30 border-green-500/50">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    @php
+                        $locale = session('locale', 'id');
+                    @endphp
+                    
+                    @forelse($membershipPlans as $plan)
+                        @php
+                            // Determine plan duration and get the type for form submission
+                            $durasi = $plan->durasi; // e.g., "1" for monthly, "3" for 3 months, "12" for yearly
+                            
+                            // Determine membership type based on duration
+                            if ($durasi == 1) {
+                                $membershipPlanId = 'bulanan';
+                                $isBestValue = false;
+                                $savings = null;
+                            } elseif ($durasi == 3) {
+                                $membershipPlanId = 'per3bulan';
+                                $isBestValue = true;
+                                $savings = 'Rp 100.000';
+                            } elseif ($durasi == 12) {
+                                $membershipPlanId = 'tahunan';
+                                $isBestValue = false;
+                                $savings = 'Rp 600.000';
+                            } else {
+                                $membershipPlanId = 'custom_' . $durasi;
+                                $isBestValue = false;
+                                $savings = null;
+                            }
+                            
+                            // Get localized name and description
+                            $namaRencana = $locale === 'id' ? $plan->nama_paket_id : $plan->nama_paket_en;
+                            $deskripsi = $locale === 'id' ? $plan->deskripsi_id : $plan->deskripsi_en;
+                            
+                            // Parse deskripsi (assuming it's JSON array or comma-separated)
+                            $deskripsiArray = [];
+                            if (is_string($deskripsi)) {
+                                // Try to parse as JSON first
+                                if (json_validate($deskripsi)) {
+                                    $deskripsiArray = json_decode($deskripsi, true);
+                                } else {
+                                    // Fallback: split by newline or comma
+                                    $deskripsiArray = array_map('trim', preg_split('/[\n,]/', $deskripsi));
+                                }
+                            } elseif (is_array($deskripsi)) {
+                                $deskripsiArray = $deskripsi;
+                            }
+                        @endphp
+                        
+                        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-lg border {{ $isBestValue ? 'border-2 border-red-500' : 'border border-gray-700 hover:border-red-600/50' }} transform hover:scale-105 transition duration-300 cursor-pointer membership-card" 
+                             data-membership="{{ $membershipPlanId }}" 
+                             data-price="{{ $plan->harga }}"
+                             data-plan-id="{{ $plan->id }}">
+                            
+                            @if($isBestValue)
+                                <div class="bg-gradient-to-r from-red-600 to-red-700 text-white text-center py-2 font-bold text-sm flex items-center justify-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
-                                    <span class="text-green-400 font-semibold">{{ __('Selected') }}</span>
+                                    {{ __('Best Value') }}
+                                </div>
+                            @endif
+                            
+                            <div class="p-6 h-full flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-white mb-3">{{ $namaRencana }}</h3>
+                                    <div class="text-3xl font-bold text-red-500 mb-2">
+                                        Rp {{ number_format($plan->harga, 0, ',', '.') }}
+                                        <span class="text-sm text-gray-400 font-normal block">/{{ $durasi }} {{ $durasi == 1 ? __('month') : __('months') }}</span>
+                                    </div>
+                                    @if($savings && $isBestValue)
+                                        <p class="text-xs text-green-400 font-semibold mb-6">{{ __('Hemat') }} {{ $savings }}</p>
+                                    @elseif($savings)
+                                        <p class="text-xs text-green-400 font-semibold mb-6">{{ __('Hemat') }} {{ $savings }}</p>
+                                    @endif
+                                    
+                                    <ul class="space-y-2 mb-6 text-sm text-gray-300">
+                                        @forelse($deskripsiArray as $item)
+                                            @if(!empty($item))
+                                                <li class="flex items-center gap-2">
+                                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    {{ trim($item, '"') }}
+                                                </li>
+                                            @endif
+                                        @empty
+                                            <li class="flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                {{ __('Premium features included') }}
+                                            </li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+                                <div class="border-2 border-transparent rounded-lg p-3 text-center membership-selected hidden bg-green-900/30 border-green-500/50">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-green-400 font-semibold">{{ __('Selected') }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    {{-- 3 Months Plan --}}
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-lg border-2 border-red-500 transform hover:scale-105 transition duration-300 cursor-pointer membership-card" 
-                         data-membership="per3bulan" 
-                         data-price="800000">
-                        <div class="bg-gradient-to-r from-red-600 to-red-700 text-white text-center py-2 font-bold text-sm flex items-center justify-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            {{ __('Best Value') }}
+                    @empty
+                        <div class="col-span-3 bg-yellow-900/20 border border-yellow-600/40 rounded-lg p-8 text-center">
+                            <p class="text-yellow-300">{{ __('No membership plans available at the moment.') }}</p>
                         </div>
-                        <div class="p-6 h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-3">{{ __('3 Months') }}</h3>
-                                <div class="text-3xl font-bold text-red-500 mb-2">
-                                    Rp 800.000
-                                    <span class="text-sm text-gray-400 font-normal block">/3 bulan</span>
-                                </div>
-                                <p class="text-xs text-green-400 font-semibold mb-6">{{ __('Hemat Rp 100.000') }}</p>
-                                <ul class="space-y-2 mb-6 text-sm text-gray-300">
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('All monthly features') }}
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('Priority support') }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="border-2 border-transparent rounded-lg p-3 text-center membership-selected hidden bg-green-900/30 border-green-500/50">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span class="text-green-400 font-semibold">{{ __('Selected') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Yearly Plan --}}
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-red-600/50 transform hover:scale-105 transition duration-300 cursor-pointer membership-card" 
-                         data-membership="tahunan" 
-                         data-price="3000000">
-                        <div class="p-6 h-full flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-3">{{ __('Yearly') }}</h3>
-                                <div class="text-3xl font-bold text-red-500 mb-6">
-                                    Rp 3.000.000
-                                    <span class="text-sm text-gray-400 font-normal block">/tahun</span>
-                                </div>
-                                <ul class="space-y-2 mb-6 text-sm text-gray-300">
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('All features included') }}
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        {{ __('Save Rp 600.000') }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="border-2 border-transparent rounded-lg p-3 text-center membership-selected hidden bg-green-900/30 border-green-500/50">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span class="text-green-400 font-semibold">{{ __('Selected') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
 
                 <input type="hidden" name="membership" id="membership_type" required>
                 <input type="hidden" name="harga_membership" id="harga_membership" required>
-
-                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-8 mb-8">
-                    <div class="flex items-center gap-3 mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                        </svg>
-                        <h3 class="text-xl font-bold text-white">{{ __('Payment Method') }}</h3>
-                    </div>
-                    <div class="space-y-3">
-                        <label class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition border border-gray-600 hover:border-red-600/50">
-                            <input type="radio" name="metode_pembayaran" value="transfer" class="w-4 h-4 mr-3" checked>
-                            <div class="flex-grow">
-                                <span class="text-white font-semibold">{{ __('Bank Transfer') }}</span>
-                                <p class="text-xs text-gray-400">{{ __('Fastest and most secure') }}</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition border border-gray-600 hover:border-red-600/50">
-                            <input type="radio" name="metode_pembayaran" value="cash" class="w-4 h-4 mr-3">
-                            <div class="flex-grow">
-                                <span class="text-white font-semibold">{{ __('Cash') }}</span>
-                                <p class="text-xs text-gray-400">{{ __('Pay at the gym') }}</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition border border-gray-600 hover:border-red-600/50">
-                            <input type="radio" name="metode_pembayaran" value="e-wallet" class="w-4 h-4 mr-3">
-                            <div class="flex-grow">
-                                <span class="text-white font-semibold">{{ __('E-Wallet') }}</span>
-                                <p class="text-xs text-gray-400">{{ __('QRIS, GoPay, etc.') }}</p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
 
                 <div class="flex gap-4">
                     <button type="submit" 
@@ -292,9 +252,9 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
                         </svg>
-                        {{ __('Upgrade Membership') }}
+                        {{ __('Proceed to Payment') }}
                     </button>
-                    <a href="{{ route('member.keranjang') }}" 
+                    <a href="" 
                        class="px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-lg font-bold transition duration-300 shadow-lg flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
@@ -315,6 +275,7 @@
         const membershipTypeInput = document.getElementById('membership_type');
         const hargaMembershipInput = document.getElementById('harga_membership');
         const submitBtn = document.getElementById('submitBtn');
+        const membershipForm = document.getElementById('membershipForm');
 
         membershipCards.forEach(card => {
             card.addEventListener('click', function() {
@@ -335,6 +296,21 @@
                 // Enable submit button
                 submitBtn.disabled = false;
             });
+        });
+
+        // Handle form submission - redirect to payment details page
+        membershipForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const membershipType = membershipTypeInput.value;
+            const price = hargaMembershipInput.value;
+            const selectedCard = document.querySelector('.membership-card.border-green-500');
+            const planId = selectedCard ? selectedCard.dataset.planId : '';
+            
+            if (membershipType && price && planId) {
+                // Redirect to membership payment details page with query parameters
+                window.location.href = `{{ route('membership.payment') }}?type=${encodeURIComponent(membershipType)}&price=${encodeURIComponent(price)}&plan_id=${encodeURIComponent(planId)}`;
+            }
         });
     });
 </script>

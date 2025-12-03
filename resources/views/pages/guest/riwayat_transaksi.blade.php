@@ -127,7 +127,16 @@
                                             <div class="space-y-1">
                                                 @foreach($products->take(2) as $prod)
                                                     <div>
-                                                        @if($prod->suplemen)
+                                                        @if($prod->membership_id)
+                                                            @php
+                                                                $membership = \App\Models\MembershipPlan::find($prod->membership_id);
+                                                            @endphp
+                                                            @if($membership)
+                                                                <span class="font-semibold">{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                                            @else
+                                                                <span class="font-semibold">{{ __('Membership') }}</span>
+                                                            @endif
+                                                        @elseif($prod->suplemen)
                                                             <span class="font-semibold">{{ $prod->suplemen->nama_suplemen }}</span>
                                                             <span class="text-gray-400">x{{ $prod->jumlah_produk ?? 1 }}</span>
                                                         @elseif($prod->kontrak)
@@ -274,7 +283,16 @@
                         <div class="space-y-1">
                             @foreach($products->take(3) as $prod)
                                 <div class="text-sm">
-                                    @if($prod->suplemen)
+                                    @if($prod->membership_id)
+                                        @php
+                                            $membership = \App\Models\MembershipPlan::find($prod->membership_id);
+                                        @endphp
+                                        @if($membership)
+                                            <span>{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                        @else
+                                            <span>{{ __('Membership') }}</span>
+                                        @endif
+                                    @elseif($prod->suplemen)
                                         <span>{{ $prod->suplemen->nama_suplemen }}</span>
                                         <span class="text-gray-400">x{{ $prod->jumlah_produk ?? 1 }}</span>
                                     @elseif($prod->kontrak)

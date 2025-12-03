@@ -1,0 +1,2 @@
+- [ ] Change max-width in resources/views/chat/room.blade.php from max-w-2xl to max-w-4xl for wider display
+- [ ] Add back button in resources/views/chat/room.blade.php linking to chat index page

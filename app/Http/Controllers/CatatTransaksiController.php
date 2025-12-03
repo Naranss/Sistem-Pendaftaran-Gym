@@ -23,7 +23,7 @@ class CatatTransaksiController extends Controller
             });
         }
         
-        $transaksi = $query->orderBy('tanggal', 'desc')->orderBy('created_at', 'desc')->paginate(10);
+        $transaksi = $query->orderBy('created_at', 'desc')->orderBy('created_at', 'desc')->paginate(10);
         return view('pages.admin.kel_transaksi', compact('transaksi'));
     }
     public function formTransaksiBaru(){

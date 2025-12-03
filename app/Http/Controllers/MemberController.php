@@ -7,242 +7,281 @@ use App\Models\Keranjang;
 use App\Models\Transaksi;
 use App\Models\JadwalWorkout;
 use App\Models\Suplemen;
+use App\Models\MembershipPlan;
+use App\Models\ProdukTransaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class MemberController extends Controller
 {
-    public function suplemen()
-    {
-        $supplements = Suplemen::with('gambarSuplemen')->paginate(12);
-        return view('member.suplemen', compact('supplements'));
-    }
-
-    public function trainer()
-    {
-        return view('member.trainer');
-    }
-
-    public function jadwal()
-    {
-        $jadwal = JadwalWorkout::where('member_id', Auth::id())->get();
-        return view('member.jadwal', compact('jadwal'));
-    }
-
     public function membership()
     {
         $user = Auth::user();
-        $akun = $user; // Auth::user() already returns Akun instance
-        $status_membership = $akun ? $this->checkMembershipStatus($akun) : 'tidak_aktif';
+        $akun = $user;
 
-        return view('pages.member.membership', compact('akun', 'status_membership'));
+        // Determine membership status
+        $status_membership = 'inactive';
+        if ($akun->membership_end) {
+            $now = Carbon::now();
+            $end = Carbon::parse($akun->membership_end);
+            
+            if ($now->isBefore($end)) {
+                $status_membership = 'aktif';
+            } elseif ($now->isAfter($end)) {
+                $status_membership = 'expired';
+            }
+        }
+
+        // Fetch all membership plans from the database
+        $membershipPlans = MembershipPlan::all();
+
+        return view('pages.member.membership', compact('akun', 'status_membership', 'membershipPlans'));
     }
 
-    public function updateMembership(Request $request)
+    public function membershipPayment(Request $request)
     {
-        $request->validate([
-            'membership' => 'required|in:bulanan,per3bulan,tahunan',
-            'harga_membership' => 'required|numeric|min:0',
-            'metode_pembayaran' => 'required|in:transfer,cash,e-wallet'
-        ]);
-
         $user = Auth::user();
+        $type = $request->query('type');
+        $price = $request->query('price');
+        $planId = $request->query('plan_id');
 
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Silakan login untuk memperbarui membership');
+        if (!$type || !$price || !$planId) {
+            return redirect()->route('guest.membership')->with('error', __('Invalid membership plan selected'));
+        }
+
+        // Find the membership plan details based on ID
+        $selectedPlan = MembershipPlan::find($planId);
+
+        if (!$selectedPlan) {
+            return redirect()->route('guest.membership')->with('error', __('Membership plan not found'));
+        }
+
+        // Verify the price matches
+        if ($selectedPlan->harga != $price) {
+            return redirect()->route('guest.membership')->with('error', __('Price mismatch'));
         }
 
         try {
-            $akun = $user; // Auth::user() already returns Akun instance
+            // Generate order ID for Midtrans
+            $orderId = 'MEMBERSHIP-' . $user->id . '-' . time();
 
-            if (!$akun) {
-                return redirect()->back()->with('error', 'Akun tidak ditemukan');
-            }
+            // Do NOT create transaction here - only generate payment token
+            // Transaction will be created when Pay Now is clicked and payment is confirmed
 
-            // Mencari atau membuat entri keranjang untuk pembaruan membership
-            $keranjang = Keranjang::firstOrCreate(
+            // Generate Midtrans snap token
+            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+            \Midtrans\Config::$clientKey = env('MIDTRANS_CLIENT_KEY');
+            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $transactionDetails = [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $price,
+            ];
+
+            $itemDetails = [
                 [
-                    'user_id' => $user->id,
-                    'id_suplemen' => null
-                ],
-                [
-                    'membership' => $request->membership,
-                    'harga_membership' => $request->harga_membership,
-                    'jumlah_produk' => 1
+                    'id' => $selectedPlan->id,
+                    'price' => (int) $price,
+                    'quantity' => 1,
+                    'name' => $selectedPlan->nama_paket_id,
                 ]
-            );
+            ];
 
-            // Memperbarui detail membership jika keranjang sudah ada
-            if (!$keranjang->wasRecentlyCreated) {
-                $keranjang->update([
-                    'membership' => $request->membership,
-                    'harga_membership' => $request->harga_membership,
-                    'jumlah_produk' => 1
-                ]);
-            }
+            $customerDetails = [
+                'first_name' => $user->nama,
+                'email' => $user->email,
+                'phone' => $user->no_telp,
+            ];
 
-            // Membuat catatan transaksi
-            $transaksi = Transaksi::create([
-                'tanggal' => Carbon::now(),
-                'id_produk' => $keranjang->id,
-                'id_kontrak' => null,
-                'membership' => $request->membership,
-                'jumlah_produk' => 1,
-                'harga_produk' => 0,
-                'harga_kontrak' => 0,
-                'harga_membership' => $request->harga_membership,
-                'metode_pembayaran' => $request->metode_pembayaran,
-                'user_id' => $user->id
+            $payload = [
+                'transaction_details' => $transactionDetails,
+                'item_details' => $itemDetails,
+                'customer_details' => $customerDetails,
+            ];
+
+            $snapToken = \Midtrans\Snap::getSnapToken($payload);
+
+            // Pass order and plan data to view (no transaction created yet)
+            return view('pages.member.membership-payment', [
+                'orderId' => $orderId,
+                'snapToken' => $snapToken,
+                'planId' => $selectedPlan->id,
+                'price' => $price,
+                'selectedPlan' => $selectedPlan,
             ]);
-
-            // Menghitung tanggal mulai dan akhir membership
-            $start_date = $this->calculateMembershipStartDate($akun);
-            $end_date = $this->calculateMembershipEndDate($start_date, $request->membership);
-
-            // Memperbarui tanggal membership pengguna
-            $akun->update([
-                'membership_start' => $start_date,
-                'membership_end' => $end_date
-            ]);
-
-            return redirect()->route('member.membership')->with('success', 'Membership berhasil diperbarui dan ditambahkan ke keranjang');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui membership: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Membership payment generation error: ' . $e->getMessage());
+            return redirect()->route('guest.membership')->with('error', __('Failed to generate payment: ') . $e->getMessage());
         }
     }
 
-    public function transaksi()
+    public function confirmMembershipPayment(Request $request)
     {
-        $transaksi = Transaksi::where('user_id', Auth::id())->get();
-        return view('member.transaksi', compact('transaksi'));
-    }
-
-    public function formGabungMembership()
-    {
-        $user = Auth::user();
-
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Silakan login untuk mengakses formulir membership');
-        }
-
-        $akun = $user; // Auth::user() already returns Akun instance
-
-        return view('member.formulir_membership', [
-            'user' => $akun,
-            'status_membership' => $this->checkMembershipStatus($akun)
-        ]);
-    }
-
-    public function perbaruiKeranjang(Request $request)
-    {
-        $request->validate([
-            'membership' => 'required|in:bulanan,per3bulan,tahunan',
-            'harga_membership' => 'required|numeric|min:0'
-        ]);
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Silakan login untuk memperbarui keranjang');
-        }
-
         try {
-            $akun = $user; // Auth::user() already returns Akun instance
+            $user = Auth::user();
 
-            // Mencari atau membuat entri keranjang untuk pengguna
-            $keranjang = Keranjang::firstOrCreate(
-                [
-                    'user_id' => $user->id,
-                    'id_suplemen' => null
-                ],
-                [
-                    'membership' => $request->membership,
-                    'harga_membership' => $request->harga_membership,
-                    'jumlah_produk' => 1
-                ]
-            );
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
 
-            // Memperbarui detail membership jika keranjang sudah ada
-            if (!$keranjang->wasRecentlyCreated) {
-                $keranjang->update([
-                    'membership' => $request->membership,
-                    'harga_membership' => $request->harga_membership,
-                    'jumlah_produk' => 1
+            $orderId = $request->input('order_id');
+            $planId = $request->input('plan_id');
+            $price = $request->input('price');
+            $statusParam = $request->input('status', null); // Check if status is provided (pending from popup close/onPending)
+
+            if (!$orderId || !$planId || !$price) {
+                return response()->json(['success' => false, 'message' => 'Missing required parameters'], 400);
+            }
+
+            \Illuminate\Support\Facades\Log::info('Confirm membership payment requested', [
+                'user_id' => $user->id,
+                'order_id' => $orderId,
+                'plan_id' => $planId,
+                'price' => $price,
+                'status_param' => $statusParam
+            ]);
+
+            // Check if transaction already exists
+            $transaction = Transaksi::where('order_id', $orderId)->first();
+
+            // Determine if this is a pending request or payment confirmation
+            $isPending = $statusParam === 'pending';
+            $midtransStatus = null;
+            
+            if (!$isPending) {
+                // Verify payment with Midtrans (only for payment confirmations, not pending requests)
+                try {
+                    \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+                    \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+                    
+                    $status = \Midtrans\Transaction::status($orderId);
+                    $midtransStatus = $status->transaction_status ?? 'unknown';
+                    
+                    \Illuminate\Support\Facades\Log::info('Midtrans status check', [
+                        'order_id' => $orderId,
+                        'status' => $midtransStatus
+                    ]);
+
+                    // Check if payment is successful
+                    if (!in_array($midtransStatus, ['capture', 'settlement'])) {
+                        return response()->json(['success' => false, 'message' => 'Payment not successful. Status: ' . $midtransStatus], 400);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error checking Midtrans status: ' . $e->getMessage());
+                    return response()->json(['success' => false, 'message' => 'Could not verify payment: ' . $e->getMessage()], 400);
+                }
+            }
+
+            // If transaction doesn't exist, create it
+            if (!$transaction) {
+                $transactionStatus = $isPending ? 'pending' : 'success';
+                
+                $transaction = Transaksi::create([
+                    'order_id' => $orderId,
+                    'id_akun' => $user->id,
+                    'total' => (int) $price,
+                    'status' => $transactionStatus,
+                    'metode_pembayaran' => 'transfer',
+                ]);
+
+                \Illuminate\Support\Facades\Log::info('New transaction created for membership', [
+                    'order_id' => $orderId,
+                    'transaction_id' => $transaction->id,
+                    'transaction_status' => $transactionStatus
+                ]);
+            } else {
+                // Update existing transaction status
+                $transactionStatus = $isPending ? 'pending' : 'success';
+                
+                $transaction->update([
+                    'status' => $transactionStatus,
+                    'metode_pembayaran' => 'transfer',
+                ]);
+
+                \Illuminate\Support\Facades\Log::info('Existing transaction updated', [
+                    'order_id' => $orderId,
+                    'transaction_id' => $transaction->id,
+                    'transaction_status' => $transactionStatus
                 ]);
             }
 
-            // Membuat catatan transaksi
-            $transaksi = Transaksi::create([
-                'tanggal' => Carbon::now(),
-                'id_produk' => $keranjang->id,
-                'id_kontrak' => null,
-                'membership' => $request->membership,
-                'jumlah_produk' => 1,
-                'harga_produk' => 0,
-                'harga_kontrak' => 0,
-                'harga_membership' => $request->harga_membership,
-                'metode_pembayaran' => $request->metode_pembayaran ?? 'pending',
-                'user_id' => $user->id
-            ]);
+            // Get membership plan
+            $selectedPlan = MembershipPlan::findOrFail($planId);
 
-            // Menghitung tanggal mulai dan akhir membership
-            $start_date = $this->calculateMembershipStartDate($akun);
-            $end_date = $this->calculateMembershipEndDate($start_date, $request->membership);
+            // Create ProdukTransaksi record if it doesn't exist
+            $prodTransaksi = ProdukTransaksi::where('id_transaksi', $transaction->id)
+                ->where('id_membership', $planId)
+                ->first();
 
-            // Memperbarui tanggal membership pengguna
-            $akun->update([
-                'membership_start' => $start_date,
-                'membership_end' => $end_date
-            ]);
+            if (!$prodTransaksi) {
+                ProdukTransaksi::create([
+                    'id_transaksi' => $transaction->id,
+                    'id_produk' => null,
+                    'id_kontrak' => null,
+                    'id_membership' => $planId,
+                    'jumlah_produk' => 1,
+                    'harga_produk' => null,
+                    'harga_kontrak' => null,
+                    'harga_membership' => (int) $price,
+                ]);
+                
+                \Illuminate\Support\Facades\Log::info('ProdukTransaksi created for membership', [
+                    'plan_id' => $planId,
+                    'transaction_id' => $transaction->id
+                ]);
+            }
 
-            return redirect()->route('member.transaksi')->with('success', 'Membership berhasil ditambahkan ke keranjang');
+            // Only update user account if payment is successful (not pending)
+            if (!$isPending && in_array($midtransStatus, ['capture', 'settlement'])) {
+                $durasi = $selectedPlan->durasi;
+
+                // Check if user is PENGUNJUNG before changing to MEMBER
+                if ($user->role === 'PENGUNJUNG' || $user->role === 'pengunjung') {
+                    // New member: start from today and add duration
+                    $membershipStart = Carbon::now();
+                    $membershipEnd = $membershipStart->copy()->addMonths($durasi);
+                    
+                    $user->update([
+                        'role' => 'MEMBER',
+                        'membership_start' => $membershipStart,
+                        'membership_end' => $membershipEnd,
+                    ]);
+
+                    \Illuminate\Support\Facades\Log::info('User upgraded to MEMBER', [
+                        'user_id' => $user->id,
+                        'membership_start' => $membershipStart,
+                        'membership_end' => $membershipEnd
+                    ]);
+                } else {
+                    // If already a member, add duration to existing end date
+                    $currentEndDate = Carbon::parse($user->membership_end);
+                    $membershipEnd = $currentEndDate->copy()->addMonths($durasi);
+                    
+                    $user->update([
+                        'membership_end' => $membershipEnd,
+                    ]);
+
+                    \Illuminate\Support\Facades\Log::info('Existing member membership extended', [
+                        'user_id' => $user->id,
+                        'previous_end' => $currentEndDate,
+                        'new_end' => $membershipEnd,
+                        'added_months' => $durasi
+                    ]);
+                }
+
+                return response()->json(['success' => true, 'message' => 'Membership activated successfully']);
+            } else if ($isPending) {
+                return response()->json(['success' => true, 'message' => 'Pending transaction created. You can complete payment later.']);
+            }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui keranjang: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Confirm membership payment error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
 
-    private function checkMembershipStatus(Akun $akun)
-    {
-        if (!$akun->membership_start || !$akun->membership_end) {
-            return 'tidak_aktif';
-        }
-
-        $now = Carbon::now();
-        if ($now->between($akun->membership_start, $akun->membership_end)) {
-            return 'aktif';
-        }
-
-        return 'expired';
-    }
-
-    private function calculateMembershipStartDate(Akun $akun)
-    {
-        $now = Carbon::now();
-        $status = $this->checkMembershipStatus($akun);
-
-        // Jika membership masih aktif, mulai dari tanggal berakhir saat ini
-        if ($status === 'aktif' && $akun->membership_end) {
-            return Carbon::parse($akun->membership_end)->addDay();
-        }
-
-        // Jika tidak aktif atau kedaluwarsa, mulai dari sekarang
-        return $now;
-    }
-
-    private function calculateMembershipEndDate($start_date, $membership)
-    {
-        $start = Carbon::parse($start_date);
-
-        switch ($membership) {
-            case 'bulanan':
-                return $start->copy()->addMonth();
-            case 'per3bulan':
-                return $start->copy()->addMonths(3);
-            case 'tahunan':
-                return $start->copy()->addYear();
-            default:
-                return $start->copy()->addMonth();
-        }
-    }
 }
