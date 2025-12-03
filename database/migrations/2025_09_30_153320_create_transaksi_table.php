@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
-            $table->date('tanggal');
-            $table->foreignId('id_produk')->nullable()->constrained('keranjang')->onDelete('restrict');
-            $table->foreignId('id_kontrak')->nullable()->constrained('kontrak')->onDelete('restrict');
-            $table->string('membership')->nullable();
-            $table->integer('jumlah_produk')->nullable();
-            $table->integer('harga_produk')->nullable();
-            $table->integer('harga_kontrak')->nullable();
-            $table->integer('harga_membership')->nullable();
-            $table->string('metode_pembayaran');
+            $table->string('order_id')->unique();
+            $table->foreignId('id_akun')->nullable()->constrained('akun')->onDelete('restrict');
+            $table->integer('total')->default(0);
+            $table->enum('status', ['pending', 'success', 'canceled'])->default('pending');
+            $table->string('metode_pembayaran')->nullable();
             $table->timestamps();
         });
     }

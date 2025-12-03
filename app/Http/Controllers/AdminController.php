@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Akun;
 use App\Models\AlatGym;
 use App\Models\Transaksi;
+use App\Models\Suplemen;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
     public function suplemen()
     {
-        return view('admin.suplemen');
+        $supplements = Suplemen::with('gambarSuplemen')->get();
+        return view('admin.suplemen', compact('supplements'));
     }
 
     public function alatGym()

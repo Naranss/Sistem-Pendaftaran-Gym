@@ -13,10 +13,11 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PerbaruiJadwalController;
 use App\Http\Controllers\PerbaruiMembershipController;
 use App\Http\Controllers\RiwayatTransaksiController;
-use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\SuplemenController;
 use Database\Seeders\AlatGymSeeder;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\KontrakTrainerController;
 
 Route::get('/', function () {
     return view('pages.homepage');
@@ -28,9 +29,9 @@ Route::post('/suplemen/add-to-cart', [SuplemenController::class, 'addToCart'])->
 
 Route::group(['middleware' => ['guest', 'auth'], 'prefix' => 'guest', 'name' => 'guest.'], function () {
     Route::get('/suplemen', [SuplemenController::class, 'index'])->name('suplemen');
-    Route::get('/trainer', function () {
-        return view('pages.guest.trainer');
-    })->name('trainer');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer/{trainer}', [KontrakTrainerController::class, 'show'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'store'])->name('trainer.contract.store');
     Route::get('/jadwal', function () {
         return view('pages.guest.jadwal');
     })->name('jadwal');
@@ -51,6 +52,7 @@ Route::post('/lang', function (\Illuminate\Http\Request $request) {
     return redirect()->back();
 })->name('lang.switch.post');
 
+
 // Auth Routes
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -64,13 +66,25 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 // Cart Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/generate-payment', [CheckoutController::class, 'generatePayment'])->name('checkout.generate-payment');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.room.index');
     Route::get('/chat/{room}', [ChatController::class, 'show'])->name('chat.room.show');
     Route::post('/chat/{room}/send', [ChatController::class, 'send'])->name('chat.room.send');
+<<<<<<< HEAD
+=======
+    Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
+    
+    // Contract Checkout Routes
+    Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
+    Route::post('/contract/checkout/generate-payment', [KontrakTrainerController::class, 'generatePayment'])->name('contract.generate-payment');
+    Route::post('/contract/confirm-payment', [KontrakTrainerController::class, 'confirmPayment'])->name('contract.confirm-payment');
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
 });
 
 // Profile Routes
@@ -79,27 +93,32 @@ Route::middleware('auth')->group(function () {
         return view('pages.dashboard');
     })->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Midtrans Payment Routes
+    Route::post('/cart/pay', [\App\Http\Controllers\PaymentController::class, 'pay'])->middleware('auth')->name('cart.pay');
 });
 
-// Guest Routes
+// Guest Routes (authenticated users without MEMBER role)
 Route::group(['middleware' => ['auth'], 'prefix' => 'guest', 'as' => 'guest.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
-    Route::get('/trainer/{trainer}/contract', [TrainerController::class, 'showContract'])->name('trainer.contract');
-    Route::post('/trainer/{trainer}/contract/store', [TrainerController::class, 'storeContract'])->name('trainer.contract.store');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer/{trainer}/contract', [KontrakTrainerController::class, 'show'])->name('trainer.contract');
+    Route::post('/trainer/{trainer}/contract/store', [KontrakTrainerController::class, 'store'])->name('trainer.contract.store');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
-    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/transaction/{transaction}/pay', [RiwayatTransaksiController::class, 'payTransaction'])->name('transaction.pay');
+    Route::get('/transaction/{transaction}/details', [RiwayatTransaksiController::class, 'showDetails'])->name('transaction.details');
 });
 
 // Member Routes
 Route::group(['middleware' => ['member', 'auth'], 'prefix' => 'member', 'as' => 'member.'], function () {
-    Route::get('/trainer', [TrainerController::class, 'index'])->name('trainer');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
     Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('jadwal');
     Route::get('/membership', [MemberController::class, 'membership'])->name('membership');
     Route::post('/membership/update', [MemberController::class, 'updateMembership'])->name('membership.update');
-    Route::get('/keranjang', [BayarController::class, 'getKeranjang'])->name('keranjang');
     Route::get('/riwayat-transaksi', [RiwayatTransaksiController::class, 'daftarTransaksiPengguna'])->name('riwayat');
+    Route::get('/transaction/{transaction}/pay', [RiwayatTransaksiController::class, 'payTransaction'])->name('transaction.pay');
+    Route::get('/transaction/{transaction}/details', [RiwayatTransaksiController::class, 'showDetails'])->name('transaction.details');
 });
 
 // Admin Routes
@@ -120,11 +139,16 @@ Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'a
     Route::get('/transaksi', [CatatTransaksiController::class, 'index'])->name('transaksi');
 });
 
+// Broadcasting Authentication
+Route::post('/broadcasting/auth', function () {
+    return \Illuminate\Support\Facades\Auth::user();
+})->middleware('auth');
+
 // Trainer Routes
 Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {
-    Route::get('/jadwal', [PerbaruiJadwalController::class, 'trainer'])->name('jadwal');
+    Route::get('/jadwal', [KontrakTrainerController::class, 'scheduleList'])->name('jadwal');
+    Route::get('/clients', [KontrakTrainerController::class, 'memberList'])->name('clients');
+    Route::post('/jadwal/update/{id}', [KontrakTrainerController::class, 'updateSchedule'])->name('jadwal.update');
     // Edit client/contract form for trainers
     Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
-    // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
-    Route::post('/jadwal/update', [PerbaruiJadwalController::class, 'update'])->name('jadwal.update');
 });
