@@ -13,6 +13,19 @@
             <p class="text-gray-400 text-lg">{{ __('Review your items before checkout') }}</p>
         </div>
 
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+        <div class="mb-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-300">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
+            {{ session('error') }}
+        </div>
+        @endif
+
         @if(count($cartItems) > 0)
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Cart Items -->

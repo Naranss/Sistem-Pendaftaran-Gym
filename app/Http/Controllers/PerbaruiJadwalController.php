@@ -165,11 +165,6 @@ class PerbaruiJadwalController extends Controller
         }
 
         // Redirect back to the same contract edit page if contract provided, otherwise back
-        $contractId = $request->input('contract');
-        if ($contractId) {
-            return redirect()->route('trainer.clients.edit', $contractId)->with('success', 'Jadwal berhasil disimpan.');
-        }
-
-        return redirect()->back()->with('success', 'Jadwal berhasil disimpan.');
+                return redirect()->route('trainer.jadwal')->with('success', 'Jadwal berhasil disimpan.');
     }
 }

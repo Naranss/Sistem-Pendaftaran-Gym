@@ -4,12 +4,20 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <!-- Header Section -->
         <div class="mb-12">
-            <div class="flex items-center gap-3 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z" />
-                    <path d="M16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                </svg>
-                <h1 class="text-4xl font-bold text-white">{{ __('Manage Supplements') }}</h1>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z" />
+                        <path d="M16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white">{{ __('Manage Supplements') }}</h1>
+                </div>
+                <a href="{{ route('homepage') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('Back') }}
+                </a>
             </div>
             <p class="text-gray-400 text-lg">{{ __('Manage supplement products and inventory') }}</p>
         </div>
@@ -194,28 +202,32 @@
                 </svg>
             </button>
         </div>
-        <form id="addForm" method="POST" action="{{ route('admin.suplemen.store') }}" onsubmit="return validateAddForm()">
+        <form id="addForm" method="POST" action="{{ route('admin.suplemen.store') }}" enctype="multipart/form-data" onsubmit="return validateAddForm()">
             @csrf
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Supplement Name') }}</label>
-                    <input type="text" name="nama_suplemen" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="text" name="nama_suplemen" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Description') }}</label>
                     <textarea name="deskripsi_suplemen" rows="3" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600"></textarea>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Image') }}</label>
+                    <input type="file" name="gambar" accept="image/*" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Price') }}</label>
-                    <input type="number" name="harga" required min="0" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="number" name="harga" min="0" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Stock') }}</label>
-                    <input type="number" name="stok" required min="0" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="number" name="stok" min="0" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Expiry Date') }}</label>
-                    <input type="date" name="tanggal_kadaluarsa" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="date" name="tanggal_kadaluarsa" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
@@ -237,7 +249,7 @@
                 </svg>
             </button>
         </div>
-        <form id="editForm" method="POST">
+        <form id="editForm" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="space-y-4">
@@ -248,6 +260,10 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Description') }}</label>
                     <textarea id="edit_deskripsi" name="deskripsi_suplemen" rows="3" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Image') }}</label>
+                    <input type="file" name="gambar" accept="image/*" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('Price') }}</label>
@@ -323,11 +339,29 @@
     }
 
     function validateAddForm() {
-        const form = document.getElementById('addForm');
-        if (!form.checkValidity()) {
-            form.reportValidity();
+        const nama = document.querySelector('#addForm input[name="nama_suplemen"]').value.trim();
+        const harga = document.querySelector('#addForm input[name="harga"]').value.trim();
+        const stok = document.querySelector('#addForm input[name="stok"]').value.trim();
+        const tanggal = document.querySelector('#addForm input[name="tanggal_kadaluarsa"]').value.trim();
+
+        // Check if all fields are filled
+        if (!nama) {
+            alert('Nama Suplemen harus diisi');
             return false;
         }
+        if (!harga || harga <= 0) {
+            alert('Harga harus diisi dan lebih dari 0');
+            return false;
+        }
+        if (!stok || stok < 0) {
+            alert('Stok harus diisi');
+            return false;
+        }
+        if (!tanggal) {
+            alert('Tanggal Kadaluarsa harus diisi');
+            return false;
+        }
+
         return true;
     }
 </script>

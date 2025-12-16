@@ -17,6 +17,19 @@ class CartController extends Controller
             ->with('suplemen')
             ->get();
 
+        // Merge duplicate items (same id_suplemen) by summing quantities
+        $mergedItems = collect();
+        foreach ($cartItems as $item) {
+            $existing = $mergedItems->firstWhere('id_suplemen', $item->id_suplemen);
+            if ($existing) {
+                // Combine quantities
+                $existing->jumlah_produk = ($existing->jumlah_produk ?? 1) + ($item->jumlah_produk ?? 1);
+            } else {
+                $mergedItems->push($item);
+            }
+        }
+        $cartItems = $mergedItems;
+
         $total = $cartItems->sum(function ($item) {
             // Handle membership items
             if ($item->membership && $item->harga_membership) {
@@ -122,8 +135,15 @@ class CartController extends Controller
      */
     public function remove($id)
     {
+        // Get the item first to find its id_suplemen
+        $item = Keranjang::where('id_akun', Auth::id())
+            ->findOrFail($id);
+        
+        $id_suplemen = $item->id_suplemen;
+        
+        // Delete ALL entries with the same id_suplemen for this user (removes all duplicates)
         Keranjang::where('id_akun', Auth::id())
-            ->findOrFail($id)
+            ->where('id_suplemen', $id_suplemen)
             ->delete();
 
         return redirect()->back()->with('success', __('Item removed from cart'));
