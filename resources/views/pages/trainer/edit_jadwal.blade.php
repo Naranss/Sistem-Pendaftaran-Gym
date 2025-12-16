@@ -13,8 +13,21 @@
             <p class="text-gray-400 text-lg">{{ __('Manage your weekly training schedule') }}</p>
         </div>
 
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+        <div class="mb-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg text-green-300">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-300">
+            {{ session('error') }}
+        </div>
+        @endif
+
         <!-- Schedule Form -->
-        <form action="{{ route('trainer.jadwal.update', $kontrak->id ) }}" method="POST" class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-8 mb-8">
+        <form action="{{ route('trainer.jadwal.update' ) }}" method="POST" class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-8 mb-8">
             @csrf
 
             <!-- Schedule Grid -->

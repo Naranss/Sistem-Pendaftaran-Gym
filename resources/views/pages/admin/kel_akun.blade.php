@@ -4,11 +4,19 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <!-- Header Section -->
         <div class="mb-12">
-            <div class="flex items-center gap-3 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                </svg>
-                <h1 class="text-4xl font-bold text-white">{{ __('Manage Accounts') }}</h1>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white">{{ __('Manage Accounts') }}</h1>
+                </div>
+                <a href="{{ route('homepage') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('Back') }}
+                </a>
             </div>
             <p class="text-gray-400 text-lg">{{ __('Manage all user accounts in the system') }}</p>
         </div>
@@ -178,23 +186,23 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Nama</label>
-                    <input type="text" name="nama" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="text" name="nama" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                    <input type="email" name="email" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="text" name="email" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
-                    <input type="password" name="password" required minlength="8" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="password" name="password" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Nomor HP</label>
-                    <input type="text" name="no_telp" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <input type="text" name="no_telp" inputmode="numeric" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Jenis Kelamin</label>
-                    <select name="jenis_kelamin" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <select name="jenis_kelamin" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                         <option value="">Pilih Jenis Kelamin</option>
                         <option value="LAKI-LAKI">Laki-Laki</option>
                         <option value="PEREMPUAN">Perempuan</option>
@@ -202,7 +210,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Role</label>
-                    <select name="role" required class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
+                    <select name="role" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600">
                         <option value="">Pilih Role</option>
                         <option value="PENGUNJUNG">Pengunjung</option>
                         <option value="MEMBER">Member</option>
@@ -331,11 +339,58 @@
     }
 
     function validateAddForm() {
-        const form = document.getElementById('addForm');
-        if (!form.checkValidity()) {
-            form.reportValidity();
+        const nama = document.querySelector('#addForm input[name="nama"]').value.trim();
+        const email = document.querySelector('#addForm input[name="email"]').value.trim();
+        const password = document.querySelector('#addForm input[name="password"]').value.trim();
+        const noTelp = document.querySelector('#addForm input[name="no_telp"]').value.trim();
+        const jenisKelamin = document.querySelector('#addForm select[name="jenis_kelamin"]').value;
+        const role = document.querySelector('#addForm select[name="role"]').value;
+
+        // Check if all fields are filled
+        if (!nama) {
+            alert('Nama harus diisi');
             return false;
         }
+        if (!email) {
+            alert('Email harus diisi');
+            return false;
+        }
+        if (!password) {
+            alert('Password harus diisi');
+            return false;
+        }
+        if (!noTelp) {
+            alert('Nomor HP harus diisi');
+            return false;
+        }
+        if (!jenisKelamin) {
+            alert('Jenis Kelamin harus dipilih');
+            return false;
+        }
+        if (!role) {
+            alert('Role harus dipilih');
+            return false;
+        }
+
+        // Validate email format with @
+        if (!email.includes('@')) {
+            alert('Email harus mengandung simbol @');
+            return false;
+        }
+
+        // Validate phone number (10-12 digits)
+        const phoneRegex = /^\d{10,12}$/;
+        if (!phoneRegex.test(noTelp)) {
+            alert('Nomor HP harus antara 10-12 angka');
+            return false;
+        }
+
+        // Validate password length
+        if (password.length < 8) {
+            alert('Password harus minimal 8 karakter');
+            return false;
+        }
+
         return true;
     }
 </script>

@@ -4,11 +4,19 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <!-- Header Section -->
         <div class="mb-12">
-            <div class="flex items-center gap-3 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                </svg>
-                <h1 class="text-4xl font-bold text-white">{{ __('Membership Plans') }}</h1>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white">{{ __('Membership Plans') }}</h1>
+                </div>
+                <a href="{{ route('homepage') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('Back') }}
+                </a>
             </div>
             <p class="text-gray-400 text-lg">{{ __('Choose the perfect plan for your fitness journey') }}</p>
         </div>
@@ -182,15 +190,6 @@
                              data-price="{{ $plan->harga }}"
                              data-plan-id="{{ $plan->id }}">
                             
-                            @if($isBestValue)
-                                <div class="bg-gradient-to-r from-red-600 to-red-700 text-white text-center py-2 font-bold text-sm flex items-center justify-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                    {{ __('Best Value') }}
-                                </div>
-                            @endif
-                            
                             <div class="p-6 h-full flex flex-col justify-between">
                                 <div>
                                     <h3 class="text-2xl font-bold text-white mb-3">{{ $namaRencana }}</h3>
@@ -224,12 +223,12 @@
                                         @endforelse
                                     </ul>
                                 </div>
-                                <div class="border-2 border-transparent rounded-lg p-3 text-center membership-selected hidden bg-green-900/30 border-green-500/50">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="border-2 border-green-500/50 rounded-lg p-3 text-center membership-selected hidden bg-green-900/30">
+                                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                         </svg>
-                                        <span class="text-green-400 font-semibold">{{ __('Selected') }}</span>
+                                        <span class="text-green-400 font-semibold text-sm">{{ __('Selected') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -254,13 +253,6 @@
                         </svg>
                         {{ __('Proceed to Payment') }}
                     </button>
-                    <a href="" 
-                       class="px-8 py-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-lg font-bold transition duration-300 shadow-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-                        </svg>
-                        {{ __('Back') }}
-                    </a>
                 </div>
             </form>
         </div>

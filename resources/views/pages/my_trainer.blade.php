@@ -4,11 +4,19 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <!-- Header Section -->
         <div class="mb-12">
-            <div class="flex items-center gap-3 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                </svg>
-                <h1 class="text-4xl font-bold text-white">{{ __('My Trainer') }}</h1>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white">{{ __('My Trainer') }}</h1>
+                </div>
+                <a href="{{ route('homepage') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('Back') }}
+                </a>
             </div>
             <p class="text-gray-400 text-lg">{{ __('Your personal fitness coach') }}</p>
         </div>
@@ -25,11 +33,15 @@
                         <!-- Trainer Avatar Section -->
                         <div class="flex flex-col sm:flex-row sm:items-end gap-6 -mt-16 mb-6">
                             <div class="flex-shrink-0">
-                                <div class="w-32 h-32 rounded-xl bg-gradient-to-br from-red-400 to-red-600 border-4 border-gray-900 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
-                                    </svg>
-                                </div>
+                                @if($trainer->profile_photo_path)
+                                    <img src="{{ $trainer->profile_photo_url }}" alt="{{ $trainer->nama }}" class="w-32 h-32 rounded-xl object-cover border-4 border-gray-900 shadow-lg">
+                                @else
+                                    <div class="w-32 h-32 rounded-xl bg-gradient-to-br from-red-400 to-red-600 border-4 border-gray-900 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                                        </svg>
+                                    </div>
+                                @endif
                             </div>
                             
                             <div class="flex-grow">
@@ -113,7 +125,7 @@
                                         </p>
                                         <p class="text-yellow-400 text-sm font-semibold">
                                             @php
-                                                $daysRemaining = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($contract->tanggal_berakhir));
+                                                $daysRemaining = intval(\Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($contract->tanggal_berakhir)));
                                             @endphp
                                             {{ $daysRemaining }} {{ __('days remaining') }}
                                         </p>

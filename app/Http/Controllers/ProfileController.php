@@ -38,17 +38,25 @@ class ProfileController extends Controller
             try {
                 // Delete old photo if exists
                 if ($user->profile_photo_path) {
-                    Storage::disk('public')->delete($user->profile_photo_path);
+                    $oldPath = public_path($user->profile_photo_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
 
-                // Store new photo
-                $path = $request->file('photo')->store('profile-photos', 'public');
+                // Store new photo in public/assets/profilPhoto/
+                $file = $request->file('photo');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('assets/profilPhoto'), $filename);
+                
+                $path = 'assets/profilPhoto/' . $filename;
                 $user->profile_photo_path = $path;
                 $user->save();
 
                 return response()->json([
                     'success' => true,
-                    'message' => __('Photo uploaded successfully!')
+                    'message' => __('Photo uploaded successfully!'),
+                    'photo_url' => asset($path)
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
@@ -68,7 +76,7 @@ class ProfileController extends Controller
             ],
             'phone' => ['required', 'string', 'max:20'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            'current_password' => ['nullable', 'required_with:password'],
+            'current_password' => ['nullable', 'string'],
             'password' => ['nullable', 'min:8', 'confirmed'],
         ]);
 
@@ -78,7 +86,14 @@ class ProfileController extends Controller
         $user->no_telp = $validated['phone'];
 
         // Handle password update
-        if ($request->filled('current_password')) {
+        if ($request->filled('password')) {
+            // If trying to set a new password, require current password
+            if (!$request->filled('current_password')) {
+                return back()
+                    ->withErrors(['current_password' => __('Current password is required to set a new password.')])
+                    ->withInput();
+            }
+
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()
                     ->withErrors(['current_password' => __('The provided password does not match your current password.')])
@@ -93,12 +108,18 @@ class ProfileController extends Controller
             try {
                 // Delete old photo if exists
                 if ($user->profile_photo_path) {
-                    Storage::disk('public')->delete($user->profile_photo_path);
+                    $oldPath = public_path($user->profile_photo_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
 
-                // Store new photo
-                $path = $request->file('photo')->store('profile-photos', 'public');
-                $user->profile_photo_path = $path;
+                // Store new photo in public/assets/profilPhoto/
+                $file = $request->file('photo');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('assets/profilPhoto'), $filename);
+                
+                $user->profile_photo_path = 'assets/profilPhoto/' . $filename;
             } catch (\Exception $e) {
                 return back()
                     ->withErrors(['photo' => __('Failed to upload photo. Please try again.')])

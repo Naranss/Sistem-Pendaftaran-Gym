@@ -285,8 +285,16 @@
 
                     if (data.success) {
                         console.log('Photo uploaded successfully');
-                        // Show success message at top
-                        location.reload();
+                        // Update the image src with new photo URL
+                        if (data.photo_url) {
+                            document.getElementById('photoPreview').src = data.photo_url + '?t=' + new Date().getTime();
+                        }
+                        // Show success notification
+                        const message = document.createElement('div');
+                        message.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                        message.textContent = '{{ __("Photo uploaded successfully!") }}';
+                        document.body.appendChild(message);
+                        setTimeout(() => message.remove(), 3000);
                     } else {
                         console.error('Upload failed:', data);
                         alert(data.message || '{{ __("Failed to upload photo") }}');
