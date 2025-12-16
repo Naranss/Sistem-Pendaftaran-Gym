@@ -29,7 +29,7 @@ class ChatController extends Controller
         }
 
         // Jika tidak punya room, kembali ke homepage dengan pesan
-        return redirect()->route('home')->with('status', 'Tidak ada room chat yang tersedia.');
+        return redirect()->route('homepage')->with('status', 'Tidak ada room chat yang tersedia.');
     }
 
     // Tampilkan room chat tertentu

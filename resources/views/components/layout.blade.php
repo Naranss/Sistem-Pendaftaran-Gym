@@ -30,7 +30,9 @@
     <div class="relative z-10 w-full max-w-md p-8 bg-[#0b132b]/90 rounded-2xl shadow-2xl flex flex-col items-center">
         <!-- Logo -->
         <div class="mb-2">
+            <a href="{{ route('homepage') }}">
             <img src="{{ asset('assets/logo/logo_white.png') }}" alt="YAPPFIT GYM Logo" class="w-52 mx-auto">
+            </a>
         </div>
 
         <!-- Slot Form -->

@@ -79,7 +79,8 @@ Route::middleware(['auth'])->group(function () {
 <<<<<<< HEAD
 =======
     Route::get('/chat/{room}/messages', [ChatController::class, 'getMessages'])->name('chat.api.messages');
-    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('trainer');
+    Route::get('/jadwal', [PerbaruiJadwalController::class, 'client'])->name('auth.jadwal');
+    Route::get('/trainer', [KontrakTrainerController::class, 'index'])->name('my.trainer');
     
     // Contract Checkout Routes
     Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
@@ -158,7 +159,6 @@ Route::post('/broadcasting/auth', function () {
 Route::group(['middleware' => ['trainer', 'auth'], 'prefix' => 'trainer', 'as' => 'trainer.'], function () {
     Route::get('/jadwal', [KontrakTrainerController::class, 'scheduleList'])->name('jadwal');
     Route::get('/clients', [KontrakTrainerController::class, 'memberList'])->name('clients');
-    Route::post('/jadwal/update/{id}', [KontrakTrainerController::class, 'updateSchedule'])->name('jadwal.update');
     // Edit client/contract form for trainers
     Route::get('/clients/{contract}/edit', [PerbaruiJadwalController::class, 'edit'])->name('clients.edit');
     // Update jadwal (form from pages.trainer.jadwal.blade.php posts to this named route)
