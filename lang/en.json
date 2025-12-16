@@ -279,5 +279,32 @@
     "Add to Cart": "Add to Cart",
     "Login to Buy": "Login to Buy",
     "No product image available": "No product image available",
-    "more": "more"
+    "more": "more",
+    "Address":"Address",
+    "Hours":"Hours",
+    "No membership information found.": "No membership information found.",
+    "Choose Your Plan": "Choose Your Plan",
+    "Hemat": "Saving",
+    "Selected": "Selected",
+    "No membership plans available at the moment.":"No membership plans available at the moment.",
+    "Complete Membership Payment" : "Complete Membership Payment",
+    "Finish your membership registration":"Finish your membership registration",
+    "Membership Details":"Membership Details",
+    "Plan Name" : "Plan Name",
+    "Total Amount" : "Total Amount",
+    "Back to Membership" : "Back to Membership",
+    "Complete your payment to activate your membership" : "Complete your payment to activate your membership",
+    "My Trainer" : "My Trainer",
+    "Your personal fitness coach" : "Your personal fitness coach",
+    "Contract Expiration" : "Contract Expiration",
+    "days remaining" : "days remaining",
+    "View Schedule" : "View Schedule",
+    "Your Status" : "Your Status",
+    "Tips" : "Tips",
+    "Contact your trainer regularly for personalized coaching" : "Contact your trainer regularly for personalized coaching",
+    "Check your training schedule to stay on track" : "Check your training schedule to stay on track",
+    "Renew your contract before expiration date" : "Renew your contract before expiration date",
+  
+
+    
 }
