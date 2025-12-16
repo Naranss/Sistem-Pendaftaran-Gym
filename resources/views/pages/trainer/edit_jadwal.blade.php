@@ -14,7 +14,7 @@
         </div>
 
         <!-- Schedule Form -->
-        <form action="{{ route('trainer.jadwal.update') }}" method="POST" class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-8 mb-8">
+        <form action="{{ route('trainer.jadwal.update', $kontrak->id ) }}" method="POST" class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 p-8 mb-8">
             @csrf
 
             <!-- Schedule Grid -->
