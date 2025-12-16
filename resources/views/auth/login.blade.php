@@ -31,7 +31,7 @@
         </button>
 
         <div class="text-gray-300 mt-4 text-sm text-center space-y-1">
-            <a href="#" class="hover:underline">{{__('Forgot Password?')}}</a><br>
+            <!-- <a href="#" class="hover:underline">{{__('Forgot Password?')}}</a><br> -->
             {{__("Don't have an account?")}}
             <a href="{{ route('register') }}" class="font-bold hover:underline text-yellow-400">{{__('Register Now')}}</a>
         </div>
