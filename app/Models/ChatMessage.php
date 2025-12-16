@@ -16,4 +16,8 @@ class ChatMessage extends Model
     {
         return $this->belongsTo(Akun::class, 'sender_id');
     }
+
+    public function receiver() {
+        return $this->belongsTo(Akun::class, 'receiver_id');
+    }
 }

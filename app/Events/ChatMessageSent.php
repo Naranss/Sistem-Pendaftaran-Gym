@@ -35,7 +35,11 @@ class ChatMessageSent implements ShouldBroadcastNow
             'sender_id' => (string)$this->message->sender_id,
             'sender_name' => $this->message->sender->nama,
             'message' => $this->message->message,
+<<<<<<< HEAD
+            'created_at' => $this->message->created_at->format('H:i d-m-Y H:i'),
+=======
             'created_at' => $this->message->created_at->format('H:i d-m-Y'),
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
         ];
     }
 }

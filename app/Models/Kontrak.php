@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ChatRoom;    
 
 class Kontrak extends Model
 {
@@ -21,6 +22,15 @@ class Kontrak extends Model
 
     protected static function booted()
     {
+<<<<<<< HEAD
+    // Otomatisasi Menambahkan kontak ketika kontrak terbuat
+    static::created(function ($kontrak) {
+        ChatRoom::firstOrCreate([
+            'trainer_id' => $kontrak->id_trainer,
+            'member_id' => $kontrak->id_client,
+        ]);
+    });
+=======
         // Otomatisasi Menambahkan chat room hanya ketika kontrak sudah dibayar (status=active)
         static::updated(function ($kontrak) {
             if ($kontrak->status === 'active' && $kontrak->wasChanged('status')) {
@@ -30,6 +40,7 @@ class Kontrak extends Model
                 ]);
             }
         });
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
     }
 
 

@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    // List chat rooms for current user
+    // Daftar room chat user (member/trainer)
     public function index()
     {
         $user = Auth::user();
-        if ($user->role == 'TRAINER') {
+        if ($user->role === 'TRAINER') {
             $rooms = ChatRoom::where('trainer_id', $user->id)->with('member')->get();
-        } else if ($user->role == 'MEMBER') {
+        } else if ($user->role === 'MEMBER') {
             $rooms = ChatRoom::where('member_id', $user->id)->with('trainer')->get();
         } else {
             $rooms = collect();
@@ -32,16 +32,20 @@ class ChatController extends Controller
         return redirect()->route('homepage')->with('status', 'Tidak ada room chat yang tersedia.');
     }
 
-    // Show chat room
+    // Tampilkan room chat tertentu
     public function show($roomId)
     {
+<<<<<<< HEAD
+        $room = ChatRoom::with(['messages.sender', 'trainer', 'member'])->findOrFail($roomId);
+=======
         $room = ChatRoom::with('messages.sender', 'member', 'trainer')->findOrFail($roomId);
+>>>>>>> e52a253c4ba32425f981fe02fc292a575ac92dea
         $user = Auth::user();
 
-        // Authorization: trainer/member only
+        // Cek akses
         if (
-            ($user->role == 'TRAINER' && $room->trainer_id != $user->id) ||
-            ($user->role == 'MEMBER' && $room->member_id != $user->id)
+            ($user->role === 'TRAINER' && $room->trainer_id !== $user->id) ||
+            ($user->role === 'MEMBER' && $room->member_id !== $user->id)
         ) {
             abort(403);
         }
@@ -65,12 +69,19 @@ class ChatController extends Controller
         ]);
     }
 
+<<<<<<< HEAD
+    // Kirim pesan ke room
+    public function send(Request $request, $roomId)
+=======
     // Get messages as JSON (untuk AJAX)
     public function getMessages($roomId)
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
     {
         $room = ChatRoom::with('messages.sender')->findOrFail($roomId);
         $user = Auth::user();
 
+<<<<<<< HEAD
+=======
         // Authorization
         if (
             ($user->role == 'TRAINER' && $room->trainer_id != $user->id) ||
@@ -109,6 +120,7 @@ class ChatController extends Controller
             abort(403);
         }
 
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
@@ -119,6 +131,13 @@ class ChatController extends Controller
             'message' => $request->message,
         ]);
 
+<<<<<<< HEAD
+        broadcast(new ChatMessageSent($message->load('sender')))->toOthers();
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => $message
+=======
         broadcast(new \App\Events\ChatMessageSent($message->load('sender')))->toOthers();
 
         return response()->json([
@@ -129,6 +148,7 @@ class ChatController extends Controller
                 'created_at' => $message->created_at->format('H:i d-m-Y H:i'),
                 'sender_id' => $user->id,
             ]
+>>>>>>> cc2d019606d1050d7861c7be7080f0d40cddc1c9
         ]);
     }
 }

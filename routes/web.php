@@ -90,8 +90,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contract/checkout/{contract}', [KontrakTrainerController::class, 'checkoutView'])->name('contract.checkout');
     Route::post('/contract/checkout/generate-payment', [KontrakTrainerController::class, 'generatePayment'])->name('contract.generate-payment');
     Route::post('/contract/confirm-payment', [KontrakTrainerController::class, 'confirmPayment'])->name('contract.confirm-payment');
+
     Route::get('/membership/payment', [MemberController::class, 'membershipPayment'])->name('membership.payment');
     Route::post('/membership/confirm-payment', [MemberController::class, 'confirmMembershipPayment'])->name('membership.confirm-payment');
+
 });
 
 // Profile Routes

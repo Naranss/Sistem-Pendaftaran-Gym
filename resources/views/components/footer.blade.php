@@ -6,10 +6,10 @@
       <div>
         <h3 class="text-lg font-semibold text-white mb-2">Contact Us</h3>
         <ul class="space-y-1.5 text-xs">
-          <li><span class="font-medium text-white">📍 Address:</span> Jl. Kepuhsari No. 10, Maguwoharjo, Sleman, Yogyakarta</li>
-          <li><span class="font-medium text-white">📞 Phone:</span> (0274) 456-7890</li>
-          <li><span class="font-medium text-white">✉️ Email:</span> yappfitgym@gmail.com</li>
-          <li><span class="font-medium text-white">⏰ Hours:</span> Mon–Fri: 08:00–21:00, Sat–Sun: 09:00–22:00</li>
+          <li><span class="font-medium text-white">📍 {{__('Address') }}:</span> Jl. Kepuhsari No. 10, Maguwoharjo, Sleman, Yogyakarta</li>
+          <li><span class="font-medium text-white">📞 {{__('Phone') }}:</span> (0274) 456-7890</li>
+          <li><span class="font-medium text-white">✉️ {{__('Email') }}:</span> yappfitgym@gmail.com</li>
+          <li><span class="font-medium text-white">⏰ {{__('Hours') }}:</span> Mon–Fri: 08:00–21:00, Sat–Sun: 09:00–22:00</li>
         </ul>
       </div>
 
