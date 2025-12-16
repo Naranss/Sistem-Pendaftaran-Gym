@@ -150,6 +150,8 @@ Route::group(['middleware' => ['admin', 'auth'], 'prefix' => 'admin', 'as' => 'a
     Route::put('/akun/{id}', [KelolaAkunController::class, 'update'])->name('akun.update');
     Route::delete('/akun/{id}', [KelolaAkunController::class, 'destroy'])->name('akun.destroy');
     Route::get('/transaksi', [CatatTransaksiController::class, 'index'])->name('transaksi');
+    Route::post('/transaksi', [CatatTransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi/{transaksi}', [CatatTransaksiController::class, 'show'])->name('transaksi.show');
 });
 
 // Broadcasting Authentication

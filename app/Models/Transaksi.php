@@ -36,7 +36,7 @@ class Transaksi extends Model
     # relasi ke tabel akun (user)
     public function user()
     {
-        return $this->belongsTo(Akun::class, 'user_id');
+        return $this->belongsTo(Akun::class, 'id_akun');
     }
 
     # Relationship to ProdukTransaksi (products in this transaction)

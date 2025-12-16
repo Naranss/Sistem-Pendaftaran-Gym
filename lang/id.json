@@ -303,7 +303,15 @@
     "Contact your trainer regularly for personalized coaching" : "Hubungi pelatih Anda secara teratur untuk konsultasi pribadi",
     "Check your training schedule to stay on track" : "Periksa jadwal pelatihan Anda untuk tetap terarah",
     "Renew your contract before expiration date" : "Perpanjang kontrak Anda sebelum tanggal kadaluarsa",
-    
-
-
+    "Select Account": "Pilih Akun",
+    "Account": "Akun",
+    "Add Transaction": "Tambah Transaksi",
+    "Transaction Type": "Jenis Transaksi",
+    "Select Transaction Type": "Pilih Jenis Transaksi",
+    "Calculated Total": "Total yang Dihitung",
+    "Select Payment Method": "Pilih Metode Pembayaran",
+    "Select Status": "Pilih Status",
+    "Select Supplement": "Pilih Suplemen",
+    "Choose Supplement": "Pilih Suplemen",
+    "in stock": "tersedia"
 }

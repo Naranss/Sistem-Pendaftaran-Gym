@@ -4,11 +4,19 @@
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         <!-- Header -->
         <div class="mb-8">
-            <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 6H6.28l-.31-1.243A1 1 0 005 4H3z" />
-                </svg>
-                <h1 class="text-4xl font-bold text-white">{{ __('Transaction Details') }}</h1>
+            <div class="flex items-center gap-3 justify-between">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                    <h1 class="text-4xl font-bold text-white">{{ __('Transaction Details') }}</h1>
+                </div>
+                <a href="{{ route('admin.transaksi') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('Back') }}
+                </a>
             </div>
         </div>
 
@@ -60,17 +68,17 @@
                 <div class="space-y-6">
                     <div class="pb-4 border-b border-gray-700">
                         <p class="text-gray-400 text-sm uppercase tracking-wider mb-1">{{ __('Payment Method') }}</p>
-                        <p class="text-white text-lg font-semibold">{{ $transaction->metode_pembayaran ?? __('Midtrans') }}</p>
+                        <p class="text-white text-lg font-semibold">{{ $transaction->metode_pembayaran ?? __('Unknown') }}</p>
                     </div>
 
                     <div class="pb-4 border-b border-gray-700">
                         <p class="text-gray-400 text-sm uppercase tracking-wider mb-1">{{ __('Customer') }}</p>
-                        <p class="text-white text-lg font-semibold">{{ Auth::user()->nama }}</p>
+                        <p class="text-white text-lg font-semibold">{{ $transaction->user->nama ?? '-' }}</p>
                     </div>
 
                     <div>
                         <p class="text-gray-400 text-sm uppercase tracking-wider mb-1">{{ __('Email') }}</p>
-                        <p class="text-white text-lg font-semibold break-all">{{ Auth::user()->email }}</p>
+                        <p class="text-white text-lg font-semibold break-all">{{ $transaction->user->email ?? '-' }}</p>
                     </div>
                 </div>
             </div>
@@ -94,7 +102,7 @@
                     @foreach($products as $prod)
                         <div class="flex items-center justify-between pb-4 border-b border-gray-700 last:border-0">
                             <div class="flex-grow">
-                                @if($prod->membership_id)
+                                @if($prod->id_membership)
                                     @if($prod->membershipPlan)
                                         <h3 class="text-white font-semibold text-lg">{{ $prod->membershipPlan->nama_paket_id ?? $prod->membershipPlan->nama_paket_en ?? __('Membership') }}</h3>
                                     @else
@@ -106,14 +114,18 @@
                                     <p class="text-gray-400 text-sm">{{ __('Supplement') }}</p>
                                 @elseif($prod->kontrak)
                                     <h3 class="text-white font-semibold text-lg">{{ __('Trainer Contract') }}</h3>
-                                    <p class="text-gray-400 text-sm">{{ __('Duration') }}: {{ $prod->kontrak->durasi ?? 'N/A' }} {{ __('months') }}</p>
+                                    <p class="text-gray-400 text-sm">{{ $prod->kontrak->id_trainer ? \App\Models\Akun::find($prod->kontrak->id_trainer)->nama ?? 'Unknown Trainer' : 'Unknown Trainer' }}</p>
                                 @else
                                     <h3 class="text-white font-semibold text-lg">{{ __('Item') }}</h3>
                                 @endif
                             </div>
 
                             <div class="text-right">
-                                @if($prod->suplemen)
+                                @if($prod->harga_membership)
+                                    <p class="text-red-400 font-bold text-lg">
+                                        Rp {{ number_format($prod->harga_membership ?? 0, 0, ',', '.') }}
+                                    </p>
+                                @elseif($prod->suplemen)
                                     <p class="text-gray-400 text-sm">x{{ $prod->jumlah_produk ?? 1 }}</p>
                                     <p class="text-red-400 font-bold text-lg">
                                         Rp {{ number_format($prod->harga_produk ?? 0, 0, ',', '.') }}
@@ -160,14 +172,9 @@
 
         <!-- Action Buttons -->
         <div class="flex gap-4 mt-8">
-            <a href="{{ route('guest.riwayat') }}" class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 text-center">
-                {{ __('Back to History') }}
+            <a href="{{ route('admin.transaksi') }}" class="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-bold transition duration-300 text-center">
+                {{ __('Back to Transactions') }}
             </a>
-            @if($transaction->status === 'pending')
-                <a href="{{ route('guest.transaction.pay', $transaction->id) }}" class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition duration-300 text-center">
-                    {{ __('Pay Now') }}
-                </a>
-            @endif
         </div>
     </div>
 </main>
