@@ -279,5 +279,16 @@
     "Add to Cart": "Add to Cart",
     "Login to Buy": "Login to Buy",
     "No product image available": "No product image available",
-    "more": "more"
+    "more": "more",
+    "Select Account": "Select Account",
+    "Account": "Account",
+    "Add Transaction": "Add Transaction",
+    "Transaction Type": "Transaction Type",
+    "Select Transaction Type": "Select Transaction Type",
+    "Calculated Total": "Calculated Total",
+    "Select Payment Method": "Select Payment Method",
+    "Select Status": "Select Status",
+    "Select Supplement": "Select Supplement",
+    "Choose Supplement": "Choose Supplement",
+    "in stock": "in stock"
 }

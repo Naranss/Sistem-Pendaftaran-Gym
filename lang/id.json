@@ -279,5 +279,16 @@
     "No product image available": "Tidak ada gambar produk tersedia",
     "Search supplements...": "Cari suplemen...",
     "View": "Lihat",
-    "more": "lagi"
+    "more": "lagi",
+    "Select Account": "Pilih Akun",
+    "Account": "Akun",
+    "Add Transaction": "Tambah Transaksi",
+    "Transaction Type": "Jenis Transaksi",
+    "Select Transaction Type": "Pilih Jenis Transaksi",
+    "Calculated Total": "Total yang Dihitung",
+    "Select Payment Method": "Pilih Metode Pembayaran",
+    "Select Status": "Pilih Status",
+    "Select Supplement": "Pilih Suplemen",
+    "Choose Supplement": "Pilih Suplemen",
+    "in stock": "tersedia"
 }

@@ -16,7 +16,7 @@ class RiwayatTransaksiController extends Controller
         
         // Get user transactions, ordered by newest first
         $transaksi = Transaksi::where('id_akun', $userId)
-            ->with(['user', 'kontrak', 'kontrak.trainer'])
+            ->with(['user', 'produkTransaksi.suplemen', 'produkTransaksi.membershipPlan', 'produkTransaksi.kontrak', 'kontrak', 'kontrak.trainer'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -108,7 +108,7 @@ class RiwayatTransaksiController extends Controller
         $user = Auth::user();
         $transaction = Transaksi::where('id', $transactionId)
             ->where('id_akun', $user->id)
-            ->with('produkTransaksi.suplemen', 'produkTransaksi.kontrak')
+            ->with('produkTransaksi.suplemen', 'produkTransaksi.membershipPlan', 'produkTransaksi.kontrak')
             ->first();
 
         if (!$transaction) {

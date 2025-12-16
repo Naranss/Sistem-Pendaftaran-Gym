@@ -135,12 +135,9 @@
                                             <div class="space-y-1">
                                                 @foreach($products->take(2) as $prod)
                                                     <div>
-                                                        @if($prod->membership_id)
-                                                            @php
-                                                                $membership = \App\Models\MembershipPlan::find($prod->membership_id);
-                                                            @endphp
-                                                            @if($membership)
-                                                                <span class="font-semibold">{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                                        @if($prod->id_membership)
+                                                            @if($prod->membershipPlan)
+                                                                <span class="font-semibold">{{ $prod->membershipPlan->nama_paket_id ?? $prod->membershipPlan->nama_paket_en }}</span>
                                                             @else
                                                                 <span class="font-semibold">{{ __('Membership') }}</span>
                                                             @endif
@@ -291,12 +288,9 @@
                         <div class="space-y-1">
                             @foreach($products->take(3) as $prod)
                                 <div class="text-sm">
-                                    @if($prod->membership_id)
-                                        @php
-                                            $membership = \App\Models\MembershipPlan::find($prod->membership_id);
-                                        @endphp
-                                        @if($membership)
-                                            <span>{{ $membership->nama_paket_id ?? $membership->nama_paket_en }}</span>
+                                    @if($prod->id_membership)
+                                        @if($prod->membershipPlan)
+                                            <span>{{ $prod->membershipPlan->nama_paket_id ?? $prod->membershipPlan->nama_paket_en }}</span>
                                         @else
                                             <span>{{ __('Membership') }}</span>
                                         @endif
