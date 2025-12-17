@@ -188,13 +188,13 @@
                                 .then(confirmData => {
                                     console.log('Confirm payment response:', confirmData);
                                     alert('Payment successful! Your contract is now active.');
-                                    window.location.href = '{{ route("chat.room.index") }}';
+                                    window.location.href = '{{ route("guest.trainer") }}';
                                 })
                                 .catch(err => {
                                     console.error('Confirm payment error:', err);
                                     // Still redirect even if confirm fails, as payment was successful
                                     alert('Payment successful! Your contract is now active.');
-                                    window.location.href = '{{ route("chat.room.index") }}';
+                                    window.location.href = '{{ route("guest.trainer") }}';
                                 });
                             },
                             onPending: function(result) {
